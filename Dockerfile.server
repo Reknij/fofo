@@ -1,0 +1,14 @@
+# Rust
+FROM rust:latest AS builder
+RUN rustup target add x86_64-unknown-linux-musl
+RUN apt update && apt install -y musl-tools musl-dev
+RUN update-ca-certificates
+WORKDIR /server
+COPY ./server .
+RUN cargo build --target x86_64-unknown-linux-musl --release
+
+# Alpine
+FROM alpine:3.17
+COPY --from=builder /server/target/x86_64-unknown-linux-musl/release/fofo /
+VOLUME ["/data"]
+CMD /fofo --data-path /data serve

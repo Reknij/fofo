@@ -1,0 +1,12 @@
+# Node
+FROM node:18-alpine as node_build
+WORKDIR /myapp
+COPY ./web/ .
+RUN npm install
+RUN npm run build
+
+# Alpine
+FROM node:18-alpine
+COPY --from=node_build /myapp/.output/ /web
+ENV NITRO_PORT=6687
+CMD node /web/server/index.mjs

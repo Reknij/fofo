@@ -1,0 +1,64 @@
+[package]
+name = "fofo"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[workspace]
+members = ["crates/*"]
+
+[profile.release]
+strip = true      # Automatically strip symbols from the binary.
+lto = true
+codegen-units = 1
+
+[workspace.dependencies]
+sqlx = { version = "0.7", features = [
+    "sqlite",
+    "runtime-tokio-rustls",
+    "chrono",
+] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_repr = "0.1"
+toml = "0.8"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+anyhow = "1.0"
+tokio = { version = "1", features = ["full"] }
+futures = "0.3"
+lazy_static = "1"
+fancy-regex = "*"
+chrono = "0.4"
+clap = { version = "4.2.5", features = ["derive"] }
+moka = { version = "0.11", features = ["future"] }
+rust-crypto = "^0.2"
+async-trait = "0.1"
+rand = "0.8"
+static_assertions = "1.1.0"
+
+category_system = { version = "*", path = "./crates/category_system" }
+group_system = { version = "*", path = "./crates/group_system" }
+post_system = { version = "*", path = "./crates/post_system" }
+comment_system = { version = "*", path = "./crates/comment_system" }
+user_system = { version = "*", path = "./crates/user_system" }
+like_system = { version = "*", path = "./crates/like_system" }
+notification_system = { version = "*", path = "./crates/notification_system" }
+vertification_system = { version = "*", path = "./crates/vertification_system" }
+channel_cache = { version = "*", path = "./crates/channel_cache" }
+shared_core = { version = "*", path = "./crates/shared_core" }
+storage = { version = "*", path = "./crates/storage" }
+fofo_utils = { version = "*", path = "./crates/fofo_utils" }
+
+
+[dependencies]
+tracing = { workspace = true }
+tokio = { workspace = true }
+
+static_assertions = { workspace = true }
+tracing-subscriber = { workspace = true }
+shared_core = { workspace = true }
+fofo_utils = { workspace = true }
+fancy-regex = { workspace = true }
+fofo_server = { version = "*", path = "./crates/fofo_server"}

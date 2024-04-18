@@ -1,0 +1,25 @@
+[package]
+name = "fofo_utils"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = { version = "4.2.5", features = ["derive"] }
+
+sqlx = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_repr = { workspace = true }
+toml = { workspace = true }
+tracing = { workspace = true }
+anyhow = { workspace = true }
+tokio = { workspace = true }
+futures = { workspace = true }
+lazy_static = { workspace = true }
+chrono = { workspace = true }
+moka = { workspace = true }
+async-trait = { workspace = true }
+static_assertions = { workspace = true }
+fancy-regex = { workspace = true }
