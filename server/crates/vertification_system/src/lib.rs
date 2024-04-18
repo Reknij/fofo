@@ -105,11 +105,11 @@ impl VerificationSystem {
         let mut cs = Vec::with_capacity(length as _);
         for _ in 0..length {
             let captcha = CaptchaBuilder::new()
-                .length(5)
-                .width(130)
-                .height(40)
+                .length(4)
+                .width(150)
+                .height(75)
                 .dark_mode(false)
-                .complexity(6) // min: 1, max: 10
+                .complexity(5) // min: 1, max: 10
                 .build();
             cs.push(captcha)
         }
