@@ -1,6 +1,2 @@
-import type { SafeUserInfo, UserTag } from "~/models/user";
-export interface UserAndTag {
-    user: SafeUserInfo,
-    tag: UserTag,
-}
-export const usePostUserAndTag = () => useState<UserAndTag|null>('postUser', ()=>null)
+import type { SafeUserInfo } from "~/models/user";
+export const usePostUser = () => useState<SafeUserInfo | null>('postUser', () => null)

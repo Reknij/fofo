@@ -12,48 +12,52 @@ pub struct SetStatusBody {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetPostQuery {
+    #[serde(default = "disabled")]
+    pub full: bool,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetPostsQuery {
     pub sort: PostAlgorithmOrder,
     #[serde(default)]
     pub distinct: bool,
     pub category_id: Option<usizedb>,
     pub created_by_id: Option<usizedb>,
-    #[serde(default = "GetPostQuery::default_time_num")]
+    #[serde(default = "default_time_num")]
     pub time_num: usizedb,
-    #[serde(default = "GetPostQuery::default_time")]
+    #[serde(default = "default_time")]
     pub time: String,
     pub index: usizedb,
     pub limit: usizedb,
     #[serde(default)]
     pub extended: bool,
-    #[serde(default = "GetPostQuery::enable")]
+    #[serde(default)]
     pub top_order_enable: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct GetPostCountQuery {
+pub struct GetPostsCountQuery {
     pub sort: PostAlgorithmOrder,
     pub category_id: Option<usizedb>,
     pub created_by_id: Option<usizedb>,
     #[serde(default)]
     pub distinct: bool,
-    #[serde(default = "GetPostQuery::default_time_num")]
+    #[serde(default = "default_time_num")]
     pub time_num: usizedb,
-    #[serde(default = "GetPostQuery::default_time")]
+    #[serde(default = "default_time")]
     pub time: String,
 }
 
-impl GetPostQuery {
-    pub fn default_time_num() -> usizedb {
-        1
-    }
+fn default_time_num() -> usizedb {
+    1
+}
 
-    pub fn default_time() -> String {
-        "lifetime".to_owned()
-    }
+fn default_time() -> String {
+    "lifetime".to_owned()
+}
 
-    pub fn enable() -> bool {
-        true
-    }
+fn disabled() -> bool {
+    false
 }
 
 macro_rules! impl_verify {

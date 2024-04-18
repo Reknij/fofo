@@ -10,29 +10,29 @@ pub type SafeConfig = Arc<Config>;
 #[derive(Debug, Clone, Deserialize)]
 #[serde(default)]
 pub struct Config {
-    /// Buffer size
+    /// Buffer size. Sqlite maximum bulk insert is 999.
     pub buffer_size: usize,
     /// Request pagination maximum limit.
     pub fetch_limit: usize,
-    /// All task trigger interval in millisecond
+    /// All task trigger interval in millisecond.
     pub task_trigger_ms: usize,
-    /// Users logined active duration in day
+    /// Users logined active duration in day.
     pub auth_active_days: usize,
-    /// resources expiry duration in second
+    /// resources expiry duration in second.
     pub resource_expiry_seconds: usize,
-    /// temporary resource expiry duration in second
+    /// temporary resource expiry duration in second.
     pub temporary_expiry_seconds: usize,
-    /// users get presign url expiry duration in second
+    /// users get presign url expiry duration in second.
     pub presign_expiry_seconds: usize,
-    /// All check task trigger interval in millisecond
+    /// All check task trigger interval in millisecond.
     pub check_task_interval_seconds: usize,
-    /// Cache max capacity
+    /// The maximum capacity of entries that the cache can hold.
     pub cache_max_capacity: u64,
-    /// ttl in second
+    /// ttl in second.
     pub ttl_seconds: u64,
-    /// tti in second
+    /// tti in second.
     pub tti_seconds: u64,
-    /// Post editable duration in second
+    /// Post editable duration in second.
     pub editable_seconds: u64,
     /// Post and comment top index maximum, ignore admin.
     pub top_index_max: u64,
@@ -44,15 +44,15 @@ pub struct Config {
     pub open_register: bool,
     /// Local storage service config. (If S3 is disabled)
     pub local: LocalStorageConfig,
-    /// Use API compatible with the Amazon S3 cloud storage service.
+    /// Use API compatible with the Amazon S3 cloud storage service. Defaults to None, if defined it means enabled.
     pub s3: Option<S3Config>,
     /// Use forwarded ip instead peer ip. It use header `x-forwarded-for` to get the ip.
     pub forwarded_ip: bool,
-    /// The bypass key for rate limit. If request with header `x-bypass-key` equals to this key will bypass it.
+    /// The bypass key for rate limit. If request with header `x-bypass-key` equals to this key will bypass it. Default is none.
     pub bypass_key: Option<Cow<'static, str>>,
     /// Console log level.
     pub log_level: Cow<'static, str>,
-    /// Image format. Example, using when generate captcha.
+    /// Image format. Example, using when generate captcha. Go to https://docs.rs/image/latest/image/enum.ImageFormat.html see more.
     pub image_format: Cow<'static, str>,
 }
 
@@ -84,10 +84,10 @@ pub struct LocalStorageConfig {
 
 impl LocalStorageConfig {
     pub fn default_public_url() -> Cow<'static, str> {
-        Cow::Borrowed("")
+        LocalStorageConfig::default().public_url
     }
     pub fn default_max_bytes() -> usize {
-        1 * 1024 * 1024
+        LocalStorageConfig::default().max_bytes
     }
 }
 
@@ -111,7 +111,7 @@ impl Default for Config {
             temporary_expiry_seconds: 60,
             presign_expiry_seconds: 8,
             check_task_interval_seconds: 3600,
-            cache_max_capacity: 50000,
+            cache_max_capacity: 1000,
             ttl_seconds: 5,
             tti_seconds: 5,
             editable_seconds: 30 * 60,

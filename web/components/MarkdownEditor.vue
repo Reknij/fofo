@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import "bytemd/dist/index.css";
+import '~/styles/bytemd.css'
 // @ts-ignore
 import { Editor } from "@bytemd/vue-next";
 import { bytemdPlugins } from "~/helper";

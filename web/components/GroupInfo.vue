@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { NSpace, NCard } from "naive-ui";
 import { ContentType } from "~/models/util";
-import type { Group } from "~/models/group";
+import { type Group } from "~/models/group";
 
 const props = defineProps<{
   group: Group;
@@ -9,17 +8,15 @@ const props = defineProps<{
 </script>
 
 <template>
-  <n-space vertical>
-    <n-card size="small">
-      <h2 style="margin: 0">
-        {{ group?.title }}
-      </h2>
-    </n-card>
-    <n-card size="small" v-if="group?.description">
-      <MarkdownViewer
-        v-if="group.description_content_type == ContentType.Markdown"
-        :content="group.description"
-      />
-    </n-card>
-  </n-space>
+  <div class="space-y-2">
+    <UCard>
+      <template #header>
+        <div class="flex items-center gap-x-2">
+          <UIcon name="i-heroicons-user-group" />
+          <span class="text-2xl">{{ group.title }}</span>
+        </div>
+      </template>
+      <MarkdownViewer v-if="group.description_content_type == ContentType.Markdown" :content="group.description" />
+    </UCard>
+  </div>
 </template>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { NAvatar, NSpace, NTag, NText } from "naive-ui";
 import { getAvatar } from "~/helper";
 import { type SafeUserInfo, UserType, UserTag } from "~/models/user";
 import { useCurrentUser } from "~/states/auth";
@@ -24,7 +23,7 @@ function getUserTags() {
   return tags;
 }
 const tags = ref(getUserTags());
-watch(() => props, () => {
+watch(() => props.user, () => {
   tags.value = getUserTags();
 });
 async function goUser(e: Event) {
@@ -35,26 +34,17 @@ async function goUser(e: Event) {
 
 <template>
   <div>
-    <n-space align="center" :size="[5, 0]">
-      <n-space align="center" :size="[4, 0]">
-        <n-avatar
-          v-if="disableAvatar !== true"
-          class="clickable"
-          :src="getAvatar(user)"
-          @click="goUser"
-        ></n-avatar>
-        <n-space align="center" :size="0">
-          <a class="userIdentity" @click="goUser" :href="`/user/${user?.id}`">
-            <n-text>{{ `${user?.alias}` ?? "Unknown" }}</n-text>
-            <n-text code>{{ `@${user?.username}` }}</n-text>
-          </a>
-        </n-space>
-      </n-space>
-      <n-tag v-if="tags.length > 0" :bordered="false" type="info">{{
+    <div class="flex flex-wrap items-center gap-x-1 gap-y-1">
+      <img v-if="disableAvatar !== true" class="clickable rounded-lg size-8" :src="getAvatar(user)" @click="goUser" />
+      <a class="userIdentity" @click="goUser" :href="`/user/${user?.id}`">
+        <span class="text-sm">{{ `${user?.alias}` ?? "Unknown" }}</span>
+        <span class="code !px-0">{{ `@${user?.username}` }}</span>
+      </a>
+      <UBadge variant="subtle" v-if="tags.length > 0">{{
         tags.join(" | ")
-      }}</n-tag>
+        }}</UBadge>
       <slot></slot>
-    </n-space>
+      </div>
   </div>
 </template>
 
@@ -65,6 +55,6 @@ async function goUser(e: Event) {
 
 .userIdentity:hover {
   text-decoration: underline;
-  text-decoration-color: black;
+  @apply decoration-black dark:decoration-white
 }
 </style>

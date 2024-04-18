@@ -1,23 +1,19 @@
 <script setup lang="ts">
-import { NSpace, NCard, NButton, useMessage, useLoadingBar } from "naive-ui";
 import { getGroup } from "~/api/group";
-import type { SubPath } from "~/components/FofoBreadcrumb/model";
 import { isLogined, useCurrentUser } from "~/states/auth";
 import { UserType } from "~/models/user";
 
-const loadingBar = useLoadingBar();
-loadingBar.start();
 const router = useRouter();
 const config = useRuntimeConfig();
-const message = useMessage();
+const toast = useToast();
 const id = Number.parseInt(router.currentRoute.value.params.id as string);
 const current = useCurrentUser();
 
 const { data: group } = await getGroup(id);
-const subpaths: SubPath[] = [
+const links = [
   {
     label: "Groups",
-    href: "/groups",
+    to: "/groups",
   },
   {
     label: group.value?.title ?? "Unknown",
@@ -26,7 +22,9 @@ const subpaths: SubPath[] = [
 
 async function goEdit() {
   if (isLogined()) await router.push(`/publish/group?edit_id=${id}`);
-  else message.warning("Please login to continue!");
+  else toast.add({
+    description: "Please login to continue!",
+  })
 }
 
 useHead({
@@ -38,19 +36,13 @@ useHead({
     },
   ],
 });
-
-onMounted(() => loadingBar.finish());
 </script>
 
 <template>
-  <n-space vertical>
-    <FofoBreadcrumb :subpath="subpaths"></FofoBreadcrumb>
+  <div class="space-y-2">
+    <FofoBreadcrumb :links="links"></FofoBreadcrumb>
     <GroupInfo v-if="group" :group="group"></GroupInfo>
     <span v-else>Group info required.</span>
-    <n-card size="small" v-if="current?.user_type === UserType.Administrator">
-      <n-space align="center">
-        <n-button round @click="goEdit">Edit group</n-button>
-      </n-space>
-    </n-card>
-  </n-space>
+    <UButton v-if="current?.user_type === UserType.Administrator" round @click="goEdit">Edit group</UButton>
+  </div>
 </template>

@@ -3,7 +3,7 @@ mod model;
 use crate::{
     api::{
         api_error::ApiError,
-        post_controller::model::{GetPostQuery, SetStatusBody},
+        post_controller::model::{GetPostQuery, GetPostsQuery, SetStatusBody},
         util::{
             can_manage_post, check_category, check_post, check_user, GetDatasExtended,
             GetDatasExtendedBuilder, ListSlice, VerificationTargetWrapper, Verify,
@@ -170,7 +170,7 @@ pub async fn update_post(
 #[get("/posts")]
 pub async fn get_postlinks_with_algorithm(
     s: SDW,
-    query: web::Query<GetPostQuery>,
+    query: web::Query<GetPostsQuery>,
     client: RequestClient,
 ) -> Result<web::Json<GetDatasExtended<PostInfo>>, ApiError> {
     let index = query.index;
@@ -236,12 +236,13 @@ pub async fn get_postlinks_with_algorithm(
 pub async fn get_post(
     s: SDW,
     client: RequestClient,
+    query: web::Query<GetPostQuery>,
     path: web::Path<(usizedb,)>,
 ) -> Result<HttpResponse, ApiError> {
     let (pid,) = path.into_inner();
     let mut tx = s.core.begin_unwrap(false).await;
     check_post(&s, tx.as_mut(), pid, client.get_user(), WhatToDo::None).await?;
-    let mut post = s.post.get_post(tx.as_mut(), pid, true).await?.unwrap();
+    let mut post = s.post.get_post(tx.as_mut(), pid, query.full).await?.unwrap();
     tx.commit().await.unwrap();
     if post.content.is_some() {
         s.post.increment_views(pid).await?;

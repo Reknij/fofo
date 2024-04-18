@@ -1,19 +1,8 @@
 <script setup lang="ts">
-import { ArrowLeftOutlined } from "@vicons/antd";
-import {
-  NSpace,
-  NCard,
-  NTag,
-  NButton,
-  NIcon,
-  NAlert,
-  useLoadingBar,
-} from "naive-ui";
 import { getCategory } from "~/api/category";
 import { getLikeStatus } from "~/api/like";
 import { getPost } from "~/api/post";
 import { getUser } from "~/api/user";
-import type { SubPath } from "~/components/FofoBreadcrumb/model";
 import { getApiDetailError } from "~/helper";
 import { DetailErrorCode } from "~/models/detailError";
 import { type LikeStatus, LikeStatusFlag } from "~/models/like";
@@ -21,21 +10,22 @@ import { PostStatus } from "~/models/post";
 import { CategoryStatus } from "~/models/category";
 import { UserTag } from "~/models/user";
 import { useCurrentUser } from "~/states/auth";
-import { usePostUserAndTag } from "~/states/post";
+import { usePostUser } from "~/states/post";
 
 const router = useRouter();
-
-const loadingBar = useLoadingBar();
-loadingBar.start();
-
-const showComment = ref(false);
+const routeQuery = router.currentRoute.value.query as any as {
+  comment_page?: string;
+};
+const showComment = ref(routeQuery.comment_page ? !isNaN(Number.parseInt(routeQuery.comment_page)) : false);
 const currentUser = useCurrentUser();
 const id = Number.parseInt(router.currentRoute.value.params.id as string);
 const {
   data: post,
   error: postError,
   refresh: refreshPost,
-} = await getPost(id);
+} = await getPost(id, {
+  full: true,
+});
 const r = await Promise.all([
   getCategory(post.value?.category_id ?? 0),
   getUser(post.value?.created_by_id ?? 0),
@@ -59,10 +49,10 @@ provide("reload", async () => {
   apiError.value = getApiDetailError(postError.value ?? categoryError.value);
 });
 
-const subPaths: SubPath[] = [
+const links = [
   {
     label: category.value?.title ?? "Unknown",
-    href: `/category/${category.value?.id}`,
+    to: `/category/${category.value?.id}`,
   },
   {
     label: post.value?.id.toString() ?? "Unknown",
@@ -94,20 +84,11 @@ function statusChanged(newStatus: LikeStatus | null) {
 }
 
 if (createdBy.value)
-  usePostUserAndTag().value = {
-    user: createdBy.value,
-    tag: getTag(),
-  };
+  usePostUser().value = createdBy.value;
 
 onUnmounted(() => {
-  usePostUserAndTag().value = null;
+  usePostUser().value = null;
 });
-
-onMounted(() => loadingBar.finish());
-
-async function handleBack() {
-  router.back();
-}
 
 async function goComment(post_id: number) {
   let go = `/publish/comment?post_id=${post_id}`;
@@ -147,97 +128,55 @@ useJsonld({
 
 <template>
   <div>
-    <n-space vertical>
-      <n-space vertical v-if="post && createdBy && category">
-        <FofoBreadcrumb :subpath="subPaths"></FofoBreadcrumb>
-        <n-alert
-          title="Note"
-          type="warning"
-          v-if="category.status === CategoryStatus.Archived"
-        >
-          Category is archived. Means you can't create, update or comment post
-          on it.
-        </n-alert>
-        <n-alert
-          title="Note"
-          type="warning"
-          v-if="post.status === PostStatus.Archived"
-        >
-          Post is archived. Means you can't update or comment on it.
-        </n-alert>
-        <n-alert
-          title="Note"
-          type="error"
-          v-if="post.status === PostStatus.Banned"
-        >
-          Post is banned! Content invisible and you can't update or comment on
-          it.
-        </n-alert>
-        <PostInfo
-          :category="category"
-          :post="post"
-          :tag="getTag()"
-          :created_by="createdBy"
-          :last_edit_by="lastEditBy"
-          :likeStatus="likeStatus"
-          @statusChanged="statusChanged"
-        >
-        </PostInfo>
-        <n-tag :bordered="false">Comments</n-tag>
-        <LazyClientOnly>
-          <n-card size="small">
-            <n-space v-if="post.total_comment > 0" align="center">
-              Post have {{ post.total_comment }} comments.
-              <n-button text type="info" @click="showComment = true">
-                Click me to view!
-              </n-button>
-            </n-space>
-            <n-space v-else align="center">
-              Don't have any comments.
-              <n-button
-                v-if="post.status === PostStatus.Active"
-                text
-                type="info"
-                @click="goComment(post!.id)"
-                >Click me to reply post!</n-button
-              >
-            </n-space>
-            <Comments
-              v-if="showComment"
-              :post="post"
-              :category="category"
-              query_pagination
-            >
-            </Comments>
-          </n-card>
-        </LazyClientOnly>
-      </n-space>
-      <n-space vertical v-else>
-        <n-card size="small">
-          <h4 v-if="apiError?.code == DetailErrorCode.NoPermission">
-            You no permission to read the post.
-          </h4>
-          <h4 v-else-if="apiError?.code == DetailErrorCode.CategoryStopped">
-            Category is stopped!
-          </h4>
-          <h4 v-else-if="apiError?.code == DetailErrorCode.BannedStatus">
-            Post is banned!
-          </h4>
-          <h4 v-else-if="apiError?.code == DetailErrorCode.PostNotFound">
-            Post not found...
-          </h4>
-          <n-space vertical v-else>
-            <span>Get target post failed...</span>
-            <span>({{ apiError?.code }}) {{ apiError?.msg }}</span>
-          </n-space>
-          <n-button @click="handleBack">
-            <template #icon>
-              <n-icon :component="ArrowLeftOutlined" />
-            </template>
-            Go back
-          </n-button>
-        </n-card>
-      </n-space>
-    </n-space>
+    <div v-if="post && createdBy && category" class="space-y-2">
+      <FofoBreadcrumb :links="links"></FofoBreadcrumb>
+      <UAlert title="Archived" description="Category is archived. Means you can't create, update or comment post on it."
+        color="yellow" v-if="category.status === CategoryStatus.Archived" />
+      <UAlert title="Archived" description="Post is archived. Means you can't update or comment on it." color="yellow"
+        v-if="post.status === PostStatus.Archived" />
+      <UAlert title="Banned" description="Post is banned! Content invisible and you can't update or comment on it."
+        color="red" v-if="post.status === PostStatus.Banned" />
+      <PostInfo :category="category" :post="post" :tag="getTag()" :created_by="createdBy" :last_edit_by="lastEditBy"
+        :likeStatus="likeStatus" @statusChanged="statusChanged">
+      </PostInfo>
+      <UCard :ui="{ body: { padding: '' } }">
+        <template #header>
+          <div class="flex flex-col justify-center">
+            <div v-if="post.total_comment > 0" class="flex items-center gap-x-2 flex-wrap">
+              <span>Post have {{ post.total_comment }} comments.</span>
+              <div class="flex items-center gap-x-2">
+                <UButton variant="link" @click="showComment = !showComment" :padded="false">
+                  {{ showComment ? "Hide comments" : "View comments" }}
+                </UButton>
+                <UDivider orientation="vertical" label="OR" />
+                <UButton variant="link" @click="goComment(post.id)" :padded="false" label="Reply" />
+              </div>
+            </div>
+            <div v-else align="center" class="flex items-center">
+              <span>Don't have any comments.</span>
+              <UButton v-if="post.status === PostStatus.Active" variant="link" @click="goComment(post!.id)">Reply post!
+              </UButton>
+            </div>
+          </div>
+        </template>
+        <Comments v-if="showComment" :post="post" :category="category" query_pagination>
+        </Comments>
+      </UCard>
+    </div>
+    <UCard size="small" v-else>
+      <h4 v-if="apiError?.code == DetailErrorCode.NoPermission">
+        You no permission to read the post.
+      </h4>
+      <h4 v-else-if="apiError?.code == DetailErrorCode.CategoryStopped">
+        Category is stopped!
+      </h4>
+      <h4 v-else-if="apiError?.code == DetailErrorCode.BannedStatus">
+        Post is banned!
+      </h4>
+      <h4 v-else-if="apiError?.code == DetailErrorCode.PostNotFound">
+        Post not found...
+      </h4>
+      <UAlert v-else title="Get target post failed" :description="`(${apiError?.code}) ${apiError?.msg}`" />
+    </UCard>
   </div>
 </template>

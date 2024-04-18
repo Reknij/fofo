@@ -48,6 +48,10 @@ export interface PostToUpdate {
   top_index?: number;
 }
 
+export interface GetPostQuery {
+  full?: boolean;
+}
+
 export interface GetPostsQuery {
   distinct?: boolean;
   created_by_id?: number;

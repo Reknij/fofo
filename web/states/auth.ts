@@ -21,6 +21,10 @@ export function isLogined() {
   return currentUser != null;
 }
 
+export function getAuth() {
+  return cookie.get(AUTH_COOKIE_NAME);
+}
+
 async function setAuth(auth: string) {
   const serverInfo = await getServerInfoOnce();
   cookie.set(AUTH_COOKIE_NAME, auth, {
@@ -28,16 +32,17 @@ async function setAuth(auth: string) {
   });
 }
 
-export async function revert(manuallyAuth?: string): Promise<boolean> {
-  if (manuallyAuth) await setAuth(manuallyAuth);
+// Call it only in the nuxt context.
+export async function revertInsideNuxt(manuallyAuth?: string): Promise<boolean> {
+  const auth = useCookie(AUTH_COOKIE_NAME);
+  if (manuallyAuth) auth.value = manuallyAuth;
 
   const currentUser = useCurrentUser();
   const fetchError = useCurrentUserError();
-  clearLastError();
-  const auth = cookie.get(AUTH_COOKIE_NAME);
-  if (auth) {
+
+  if (auth.value) {
     try {
-      const { data: current } = await revertUser(auth);
+      const { data: current } = await revertUser(auth.value);
       currentUser.value = current.value;
       if (currentUser.value) return true;
       else {
@@ -70,11 +75,12 @@ export async function login(
   let { data: anu, error } = await loginUser(q);
   if (anu.value) {
     currentUser.value = anu.value.user;
-    setAuth(anu.value.auth);
+    await setAuth(anu.value.auth);
     return true;
   } else if (error.value) {
     const err = getApiDetailError(error.value);
     if (err) fetchError.value = err;
+    cookie.remove(AUTH_COOKIE_NAME);
   }
   return false;
 }
@@ -85,14 +91,12 @@ export async function logout(): Promise<boolean> {
   clearLastError();
   let auth = cookie.get(AUTH_COOKIE_NAME);
   if (auth) {
-    let { data: success, error } = await logoutUser(auth);
-    if (success) {
-      currentUser.value = null;
-      return true;
-    } else if (error.value) {
+    let { error } = await logoutUser(auth);
+    if (error.value) {
       const err = getApiDetailError(error.value);
       if (err) fetchError.value = err;
     }
+    currentUser.value = null;
     cookie.remove(AUTH_COOKIE_NAME);
   } else {
     fetchError.value = {

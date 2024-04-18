@@ -1,15 +1,5 @@
 <script setup lang="ts">
 import { getApiDetailError } from "~/helper";
-import {
-  NSpace,
-  NInput,
-  NButton,
-  NCard,
-  NDynamicTags,
-  NInputNumber,
-  NPageHeader,
-  useMessage,
-} from "naive-ui";
 import type { PostToCreate, PostToUpdate } from "~/models/post";
 import { ContentType } from "~/models/util";
 import { createPost, updatePost } from "~/api/post";
@@ -20,6 +10,7 @@ import type { PostInfo } from "~/models/post";
 import { useCurrentUser } from "~/states/auth";
 import { UserType } from "~/models/user";
 import MarkdownEditor from "./MarkdownEditor.vue";
+import { array, number, object, string } from "yup";
 
 const props = defineProps<{
   category: Category;
@@ -27,11 +18,20 @@ const props = defineProps<{
 }>();
 const router = useRouter();
 const current = useCurrentUser();
-const message = useMessage();
-const title = ref(props.edit?.title ?? "");
-const tags = ref<string[]>(props.edit?.tags ?? []);
-const content = ref(props.edit?.content ?? "");
-const topIndex = ref(props.edit?.top_index ?? 0);
+const toast = useToast();
+const state = reactive({
+  title: props.edit?.title ?? "",
+  content: props.edit?.content ?? "",
+  content_type: props.edit?.content_type ?? ContentType.Markdown,
+  tags: props.edit?.tags ?? [],
+  top_index: props.edit?.top_index ?? 0,
+})
+const schema = object({
+  title: string().required("Required"),
+  content: string().nullable(),
+  tags: array(),
+  top_index: number().nullable(),
+})
 const canSetTop = computed(
   () =>
     props.category.moderator_ids.includes(current.value?.id ?? 0) ||
@@ -39,84 +39,65 @@ const canSetTop = computed(
 );
 async function postNow() {
   if (props.edit) {
-    let query: PostToUpdate = {
-      title: title.value,
-      content: content.value,
-      content_type: ContentType.Markdown,
-      tags: tags.value,
-      top_index: topIndex.value,
-    };
     let { data: post, error } = await updatePost(props.edit.id, {
-      target: query,
+      target: {
+        ...state,
+      },
     });
     if (post.value) {
-      message.success("Success edit the post!");
+      toast.add({
+        description: "Success edit the post!"
+      })
       await router.push(`/post/${post.value.id}`);
     } else {
       const err = getApiDetailError(error.value);
-      message.error(`(${err?.code}) Edit failed. ${err?.msg}`);
+      toast.add({
+        color: 'red',
+        description: `(${err?.code}) Edit failed. ${err?.msg}`
+      })
     }
   } else {
-    let query: PostToCreate = {
-      title: title.value,
-      content: content.value,
-      content_type: ContentType.Markdown,
-      category_id: props.category.id,
-      tags: tags.value,
-      top_index: topIndex.value,
-    };
     let { data: post, error } = await createPost({
-      target: query,
+      target: {
+        category_id: props.category.id,
+        ...state
+      },
     });
     if (post.value) {
-      message.success("Success create the post!");
+      toast.add({
+        description: "Success create the post!"
+      })
       current.value!.total_post += 1;
       await router.push(`/post/${post.value.id}`);
     } else {
       const err = getApiDetailError(error.value);
-      message.error(`(${err?.code}) Create failed. ${err?.msg}`);
+      toast.add({
+        color: 'red',
+        description: `(${err?.code}) Create failed. ${err?.msg}`
+      })
     }
   }
 }
 
-async function handleBack() {
-  router.replace(`/category/${props.category.id}`);
-}
 </script>
 
 <template>
-  <n-card size="small">
-    <n-page-header :title="category.title" @back="handleBack">
-      <n-space vertical>
-        <n-input
-          v-model:value="title"
-          type="text"
-          placeholder="Your post title"
-          clearable
-        />
-        <n-dynamic-tags v-model:value="tags" :max="9" />
-        <MarkdownEditor
-          v-model:value="content"
-          placeholder="Your post content."
-        />
-        <n-space align="center" v-if="canSetTop">
-          Top Index
-          <n-input-number v-model:value="topIndex"></n-input-number>
-        </n-space>
-        <n-button @click="postNow">
+  <UCard>
+    <UForm class="space-y-2" :schema="schema" :state="state">
+      <UFormGroup label="Title" path="title">
+        <UInput v-model="state.title" placeholder="Your post title" />
+      </UFormGroup>
+      <UFormGroup label="Content" path="content">
+        <MarkdownEditor v-model:value="state.content" placeholder="Your post content." />
+      </UFormGroup>
+      <UFormGroup label="Top index" path="top_index" v-if="canSetTop">
+        <UInput type="number" v-model="state.top_index"></UInput>
+      </UFormGroup>
+      <UFormGroup>
+        <UButton @click="postNow">
           {{ edit ? "Save edit" : "Post now" }}
-        </n-button>
-      </n-space>
-    </n-page-header>
-  </n-card>
+        </UButton>
+      </UFormGroup>
+    </UForm>
+  </UCard>
 </template>
-
-<style>
-.bytemd {
-  height: 400px;
-}
-
-.bytemd-fullscreen.bytemd {
-  z-index: 99999;
-}
-</style>

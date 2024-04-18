@@ -1,0 +1,43 @@
+.bytemd,
+.tippy-content,
+.tippy-box,
+.bytemd-toolbar,
+.bytemd-toolbar-tab,
+.bytemd-dropdown,
+.bytemd-dropdown-title,
+.bytemd-body,
+.bytemd-status,
+.bytemd-split {
+  @apply dark:bg-slate-800 dark:text-neutral-300 dark:border-neutral-600
+}
+
+.CodeMirror {
+  @apply dark:bg-gray-200
+}
+
+.bytemd-toolbar-icon-active {
+  @apply dark:text-blue-300
+}
+
+.bytemd-toolbar-icon {
+  @apply dark:hover:bg-neutral-900
+}
+
+.bytemd-dropdown-item {
+  @apply dark:hover:bg-neutral-900
+}
+
+.bytemd-fullscreen {
+  z-index: 99999;
+}
+
+.markdown-body {
+  @apply !px-2 !py-1 max-w-full max-h-full h-full;
+}
+
+.markdown-body img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}

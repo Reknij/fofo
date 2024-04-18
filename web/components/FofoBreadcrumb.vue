@@ -1,34 +1,20 @@
 <script setup lang="ts">
-import { NCard, NBreadcrumb, NBreadcrumbItem, NIcon, NScrollbar } from 'naive-ui';
-import type { SubPath } from './FofoBreadcrumb/model';
-import { HomeOutlined } from '@vicons/antd';
+import type { BreadcrumbLink } from "#ui/types"
 
-const router = await useRouter();
-const props = defineProps<{
-    subpath: SubPath[],
-}>();
-
-async function go(e: Event, path?: string) {
-    e.preventDefault();
-    if (path) await router.push(path)
+defineProps<{
+    links: BreadcrumbLink[]
+}>()
+const homeLink = {
+    icon: 'i-heroicons-home',
+    label: '',
+    to: '/'
 }
 </script>
 
 <template>
-    <n-card size="small">
-        <n-scrollbar x-scrollable>
-            <n-breadcrumb>
-                <n-breadcrumb-item href="/" @click="(e: Event) => go(e, '/')">
-                    <n-icon :component="HomeOutlined"/>
-                </n-breadcrumb-item>
-                <n-breadcrumb-item v-for="p in subpath" @click="(e: Event) => go(e, p.href)" :href="p.href">{{ p.label }}</n-breadcrumb-item>
-            </n-breadcrumb>
-        </n-scrollbar>
-    </n-card>
+    <div>
+        <UCard>
+            <UBreadcrumb :links="[homeLink, ...links]"></UBreadcrumb>
+        </UCard>
+    </div>
 </template>
-
-<style>
-.n-breadcrumb ul {
-    display: inline-flex;
-}
-</style>

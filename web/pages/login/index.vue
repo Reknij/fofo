@@ -1,113 +1,79 @@
 <script setup lang="ts">
-import CaptchaImage from "~/components/CaptchaImage.vue";
-import {
-  useMessage,
-  NForm,
-  NFormItem,
-  NInput,
-  NSpace,
-  NButton,
-  NCard,
-  useLoadingBar,
-} from "naive-ui";
+import { object, string } from "yup";
+import CaptchaImage from "~/components/CaptchaImageInput.vue";
 import { DetailErrorCode } from "~/models/detailError";
 import { useCurrentUser, useCurrentUserError, login } from "~/states/auth";
 
 const now = Date.now();
-const loadingBar = useLoadingBar();
 const router = useRouter();
-const message = useMessage();
-const formValue = ref({
+const toast = useToast();
+const state = reactive({
   username: "",
   password: "",
   captcha: "",
 });
-const rules = ref({
-  username: {
-    required: true,
-    message: "Please enter your username, must unique",
-    trigger: "blur",
-  },
-  password: {
-    required: true,
-    message: "Please enter your password.",
-    trigger: "blur",
-  },
-  captcha: {
-    required: true,
-    message: "Please enter the captcha.",
-    trigger: "blur",
-  },
-});
+const schema = object({
+  username: string().required("Required"),
+  password: string()
+    .min(8, 'Must be at least 8 characters')
+    .matches(/^(?=.*[a-zA-Z])(?=.*\d)[!-~]{8,128}$/)
+    .required('Required'),
+  captcha: string().required("Required"),
+})
 
 const captchaImage = ref<InstanceType<typeof CaptchaImage> | null>();
 async function runLogin() {
   if (!captchaImage.value?.verification) {
-    message.error("Can't get the captcha key.");
+    toast.add({
+      color: 'red',
+      description: "Can't get the captcha key."
+    })
     return;
   }
 
-  const form = formValue.value;
   const success = await login({
     target: {
-      username: form.username,
-      password: form.password,
+      username: state.username,
+      password: state.password,
     },
     verification: {
       verification_id: captchaImage.value.verification.verification_id,
-      secret_key: form.captcha,
+      secret_key: state.captcha,
     },
   });
   const user = useCurrentUser().value;
   const error = useCurrentUserError().value;
   if (success && user) {
-    message.success(`Welcome back! ${user.alias}`);
+    toast.add({
+      description: `Welcome back! ${user.alias}`
+    })
     await router.push("/");
   } else {
-    message.error(`Login failed (${error?.code}): ${error?.msg}`);
+    toast.add({
+      color: 'red',
+      description: `Login failed (${error?.code}): ${error?.msg}`
+    })
     if (error?.code != DetailErrorCode.VerificationFailed)
       await captchaImage.value.refreshVerification();
   }
 }
-
-onMounted(() => loadingBar.finish());
 </script>
 
 <template>
-  <n-card>
-    <n-form
-      ref="formRef"
-      :label-width="80"
-      :model="formValue"
-      :rules="rules"
-      @keyup.enter="runLogin"
-    >
-      <n-form-item label="Username" path="username">
-        <n-input
-          v-model:value="formValue.username"
-          placeholder="Your username"
-        />
-      </n-form-item>
-      <n-form-item label="Password" path="password">
-        <n-input
-          v-model:value="formValue.password"
-          placeholder="Your password"
-          type="password"
-          show-password-on="click"
-        />
-      </n-form-item>
-      <n-form-item label="Captcha" path="captcha">
-        <n-space vertical>
-          <CaptchaImage ref="captchaImage"></CaptchaImage>
-          <n-input
-            v-model:value="formValue.captcha"
-            placeholder="Enter the captcha."
-          />
-        </n-space>
-      </n-form-item>
-      <n-form-item>
-        <n-button @click="runLogin"> Login now </n-button>
-      </n-form-item>
-    </n-form>
-  </n-card>
+  <UCard>
+    <UForm class="space-y-2" :schema="schema" :state="state" @keyup.enter="runLogin">
+      <UFormGroup label="Username" path="username">
+        <UInput v-model="state.username" placeholder="Your username" />
+      </UFormGroup>
+      <UFormGroup label="Password" path="password">
+        <UInput v-model="state.password" placeholder="Your password" type="password" show-password-on="click" />
+      </UFormGroup>
+      <UFormGroup label="Captcha" path="captcha">
+        <CaptchaImageInput ref="captchaImage" v-model="state.captcha" />
+      </UFormGroup>
+      <UFormGroup>
+        <UButton @click="runLogin"> Login now </UButton>
+      </UFormGroup>
+    </UForm>
+  </UCard>
 </template>

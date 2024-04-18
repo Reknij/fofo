@@ -11,18 +11,19 @@
     "cf-preview": "nuxt build && npx wrangler pages dev dist/"
   },
   "devDependencies": {
-    "@css-render/vue3-ssr": "^0.15.12",
+    "@iconify-json/mdi": "^1.1.66",
+    "@nuxt/image": "^1.6.0",
+    "@nuxt/ui": "^2.15.2",
     "@nuxtjs/device": "^3.1.1",
+    "@tailwindcss/typography": "^0.5.13",
     "@types/crypto-js": "^4.2.2",
     "@types/identicon.js": "^2.3.4",
     "@types/js-cookie": "^3.0.6",
     "@types/node": "^20.12.7",
-    "@vicons/antd": "^0.12.0",
-    "naive-ui": "^2.38.1",
     "nuxt": "^3.11.2",
     "unplugin-auto-import": "^0.17.5",
     "unplugin-vue-components": "^0.26.0",
-    "wrangler": "^3.50.0"
+    "wrangler": "^3.52.0"
   },
   "dependencies": {
     "@bytemd/plugin-gfm": "^1.21.0",
@@ -33,6 +34,8 @@
     "crypto-js": "^4.2.0",
     "identicon.js": "^2.3.3",
     "js-cookie": "^3.0.5",
-    "nuxt-jsonld": "^2.0.8"
-  }
+    "nuxt-jsonld": "^2.0.8",
+    "yup": "^1.4.0"
+  },
+  "packageManager": "pnpm@9.0.6+sha512.f6d863130973207cb7a336d6b439a242a26ac8068077df530d6a86069419853dc1ffe64029ec594a9c505a3a410d19643c870aba6776330f5cfddcf10a9c1617"
 }

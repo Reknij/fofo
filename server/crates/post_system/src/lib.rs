@@ -1,6 +1,6 @@
 pub mod model;
 
-use std::collections::HashMap;
+use std::{borrow::Cow, collections::HashMap};
 
 use anyhow::{bail, Result};
 use chrono::Utc;
@@ -452,7 +452,11 @@ impl PostSystem {
                 format!("created_at >= {time}")
             });
         }
-        let conds = conds.join(" AND ");
+        let where_conds = if conds.is_empty() {
+            Cow::Borrowed("")
+        } else {
+            Cow::Owned(format!("WHERE {}", conds.join(" AND ")))
+        };
         let top_order = if top_order_enable {
             "top_index DESC,"
         } else {
@@ -463,13 +467,13 @@ impl PostSystem {
         let query_str = if distinct {
             format!(
                 "WITH cte AS (
-                    SELECT {cols}, ROW_NUMBER() OVER (PARTITION BY created_by_id ORDER BY {top_order} {order_by}) AS rn FROM posts WHERE {conds} ORDER BY {top_order} {order_by}
+                    SELECT {cols}, ROW_NUMBER() OVER (PARTITION BY created_by_id ORDER BY {top_order} {order_by}) AS rn FROM posts {where_conds} ORDER BY {top_order} {order_by}
                   )
                   SELECT {cols} FROM cte WHERE rn = 1 LIMIT {limit} OFFSET {offset};",
             )
         } else {
             format!(
-                "SELECT {cols} FROM posts WHERE {conds} ORDER BY {top_order} {order_by} LIMIT {limit} OFFSET {offset};"
+                "SELECT {cols} FROM posts {where_conds} ORDER BY {top_order} {order_by} LIMIT {limit} OFFSET {offset};"
             )
         };
         let key = PostArrayKey {
@@ -517,16 +521,20 @@ impl PostSystem {
                 format!("created_at >= {time}")
             });
         }
-        let conds = conds.join(" AND ");
+        let where_conds = if conds.is_empty() {
+            Cow::Borrowed("")
+        } else {
+            Cow::Owned(format!("WHERE {}", conds.join(" AND ")))
+        };
         let query_str = if distinct {
             format!(
                 "WITH cte AS (
-                    SELECT likes, dislikes, views, total_comment, created_at, created_by_id, category_id, ROW_NUMBER() OVER (PARTITION BY created_by_id) AS rn FROM posts WHERE {conds}
+                    SELECT likes, dislikes, views, total_comment, created_at, created_by_id, category_id, ROW_NUMBER() OVER (PARTITION BY created_by_id) AS rn FROM posts {where_conds}
                   )
                   SELECT COUNT(*) FROM cte WHERE rn = 1;",
             )
         } else {
-            format!("SELECT COUNT(*) FROM posts WHERE {conds};",)
+            format!("SELECT COUNT(*) FROM posts {where_conds};",)
         };
         let key = PostArrayKey {
             query_str,

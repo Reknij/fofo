@@ -1,14 +1,10 @@
 <script setup lang="ts">
-/* __placeholder__ */
 import type { Category } from "~/models/category";
-import { NCard, useLoadingBar } from "naive-ui";
 import { getCategory } from "~/api/category";
 import { UserType } from "~/models/user";
 import { useCurrentUser } from "~/states/auth";
 
 const router = useRouter();
-const loadingBar = useLoadingBar();
-loadingBar.start();
 const query = router.currentRoute.value.query as any as {
   edit_id?: string;
 };
@@ -21,15 +17,24 @@ if (editMode.value) {
     edit.value = data.value;
   }
 }
-onMounted(() => loadingBar.finish());
+const links = [
+  {
+    label: 'Categories',
+    to: '/categories',
+  },
+  {
+    label: edit.value?.title ?? "Create category",
+    to: edit.value ? `/category/${edit.value.id}` : undefined
+  },
+]
 </script>
 
 <template>
   <ClientOnly>
-    <CategoryEditor
-      v-if="user?.user_type == UserType.Administrator"
-      :edit="edit"
-    ></CategoryEditor>
-    <n-card v-else>No permission to access...</n-card>
+    <div class="space-y-2">
+      <FofoBreadcrumb :links="links" />
+      <CategoryEditor v-if="user?.user_type == UserType.Administrator" :edit="edit"></CategoryEditor>
+      <UAlert v-else title="No permission to access..." />
+    </div>
   </ClientOnly>
 </template>

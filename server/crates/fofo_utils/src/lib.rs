@@ -21,7 +21,7 @@ use lazy_static::lazy_static;
 pub type usizedb = u32;
 
 lazy_static! {
-    static ref IMAGE_URL_REGEX: Regex = Regex::new(r"!\[(?P<alt>.*?)\]\((?P<url>.*?)\)").unwrap();
+    static ref IMAGE_URL_REGEX: Regex = Regex::new(r"!\[.*?\]\((?P<url>https?\:\/\/\S+).*\)").unwrap();
 }
 
 #[derive(Debug, Deserialize_repr, Serialize_repr, PartialEq, Clone, Copy, sqlx::Type)]

@@ -1,19 +1,5 @@
 <script setup lang="ts">
 import {
-  NList,
-  NSpace,
-  NListItem,
-  NGrid,
-  NGi,
-  NEllipsis,
-  NIcon,
-  NPagination,
-  NButton,
-  NText,
-  NTag,
-  NSwitch,
-} from "naive-ui";
-import {
   getUserNotifications,
   setUserNotificationReaded,
 } from "~/api/notification";
@@ -32,8 +18,8 @@ import {
 } from "~/models/util";
 import "bytemd/dist/index.css";
 import { UserTag } from "~/models/user";
+import { PostStatus } from "~/models/post";
 import type { CommentInfo } from "~/models/comment";
-import { RightOutlined } from "@vicons/antd";
 
 const config = useRuntimeConfig();
 const router = useRouter();
@@ -200,94 +186,59 @@ function getNotificationTitle(un?: UserNotification) {
 </script>
 
 <template>
-  <n-space vertical>
-    <n-space>
-      <n-pagination
-        simple
-        v-if="!hide_pagination && notifications"
-        v-model:page="page"
-        :page-size="limit ?? config.public.limitData.any"
-        :item-count="max ?? notifications.data.total"
-        :on-update:page="changePage"
-      />
-      <n-switch
-        :value="unreadNotifications?.data.total === 0"
-        @update:value="(value: boolean) => setAllReaded(value)"
-        v-if="unreadNotifications?.data.total"
-      >
-        <template #checked> All readed </template>
-        <template #unchecked> All unread </template>
-      </n-switch>
-    </n-space>
-    <n-list v-if="notifications">
-      <n-list-item v-if="notifications.data.items.length == 0">
-        <n-space vertical>
-          <span>No notifications yet~</span>
-        </n-space>
-      </n-list-item>
-      <n-list-item v-for="notification in notifications.data.items">
-        <n-space vertical>
-          <n-space>
-            <n-text code>{{ timeAgo(notification.created_at) }}</n-text>
-            <n-switch
-              :value="notification.readed"
-              @update:value="(value: boolean) => setReaded(value, notification)"
-            >
-              <template #checked> Readed </template>
-              <template #unchecked> Unread </template>
-            </n-switch>
-          </n-space>
-          <span>{{ getNotificationTitle(notification) }}</span>
-          <n-space align="center" :wrap="false">
-            <slot name="prefix"></slot>
-            <n-grid :cols="1">
-              <n-gi>
-                <n-button
-                  tag="a"
-                  :href="`/post/${getPostId(notification)}`"
-                  text
-                  style="font-size: large; width: 100%"
-                  @click="(e: Event) => clickPost(e, getPostId(notification) ?? 0)"
-                >
-                  <n-ellipsis style="padding: 5px 0px; text-align: center">
-                    {{ getPost(getPostId(notification))?.title }}
-                  </n-ellipsis>
-                </n-button>
-              </n-gi>
-            </n-grid>
-          </n-space>
-          <n-space vertical :size="0">
-            <FofoUserAvatar
-              :user="getUser(notification.created_by_id)"
-              :tag="
-                getTag(
-                  notification.created_by_id,
-                  getComment(notification.ref_id)?.post_id ?? 0
-                )
-              "
-              style="margin-bottom: -10px"
-            >
-              <n-space
-                align="center"
-                v-if="
-                  isCommentClass(notification) &&
-                  getComment(notification.ref_id)?.reply_comment_id
-                "
-              >
-                <n-icon>
-                  <RightOutlined></RightOutlined>
-                </n-icon>
-                <n-tag :bordered="false" type="info">You</n-tag>
-              </n-space>
-            </FofoUserAvatar>
-            <MarkdownViewer
-              v-if="checkContent(getComment(notification.ref_id))"
-              :content="getComment(notification.ref_id)?.content"
-              :max_row="1"
-            />
-          </n-space>
-        </n-space>
-      </n-list-item>
-    </n-list>
-  </n-space>
+  <div class="space-y-2">
+    <UAlert v-if="notifications?.data.total === 0" title="No notifications yet~" />
+    <UPagination v-if="!hide_pagination && notifications?.data.total" :model-value="query.index + 1"
+      @update:model-value="(v: number) => query.index = v + 1" :page-count="limit ?? config.public.limitData.any"
+      :total="max ?? notifications.data.total" />
+
+    <UBadge class="gap-x-2" variant="soft" v-if="unreadNotifications?.data.total">
+      <span v-if="unreadNotifications?.data.total === 0">All readed</span>
+      <span v-else>All unread</span>
+      <UToggle :model-value="unreadNotifications?.data.total === 0"
+        @update:model-value="(value: boolean) => setAllReaded(value)" />
+    </UBadge>
+
+    <UCard v-for="notification in notifications?.data.items">
+      <div class="flex flex-col justify-center">
+        <div class="flex flex-wrap items-center gap-x-2 gap-y-2">
+          <span class="code">{{ timeAgo(notification.created_at) }}</span>
+          <div class="flex items-center gap-x-2">
+            <span v-if="notification.readed">Readed</span>
+            <span v-else>Unread</span>
+            <UToggle :model-value="notification.readed"
+              @update:model-value="(value: boolean) => setReaded(value, notification)" />
+          </div>
+        </div>
+        <span>{{ getNotificationTitle(notification) }}</span>
+        <div class="flex gap-x-1 items-center" v-if="getPost(getPostId(notification))">
+          <UIcon v-if="getPost(getPostId(notification))!.top_index" name="i-ph-push-pin" dynamic />
+          <UIcon v-if="getPost(getPostId(notification))!.status === PostStatus.Banned" name="i-heroicons-lock-closed"
+            class="text-red-500" />
+          <UIcon v-else-if="getPost(getPostId(notification))!.status === PostStatus.Archived"
+            name="i-heroicons-lock-closed" class="text-yellow-500" />
+          <ULink class="line-clamp-1" :to="`/post/${getPost(getPostId(notification))!.id}`" active-class="text-primary"
+            inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
+            {{ getPost(getPostId(notification))!.title }}
+          </ULink>
+        </div>
+        <div class="flex flex-col justify-center gap-y-1">
+          <FofoUserAvatar :user="getUser(notification.created_by_id)" :tag="getTag(
+            notification.created_by_id,
+            getComment(notification.ref_id)?.post_id ?? 0
+          )">
+            <div class="flex flex-row items-center space-x-1" v-if="
+              isCommentClass(notification) &&
+              getComment(notification.ref_id)?.reply_comment_id
+            ">
+              <UIcon name="i-mdi-menu-right-outline" />
+              <UBadge variant="subtle">You</UBadge>
+            </div>
+          </FofoUserAvatar>
+          <MarkdownViewer v-if="checkContent(getComment(notification.ref_id))"
+            :content="getComment(notification.ref_id)?.content" :max_row="1" />
+        </div>
+      </div>
+    </UCard>
+  </div>
 </template>

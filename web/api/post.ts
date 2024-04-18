@@ -1,4 +1,4 @@
-import type { PostInfo, PostAlgorithmOrder, GetPostsQuery, GetPostCountQuery, PostToUpdate, PostToCreate, SetPostBody } from "~/models/post";
+import type { PostInfo, PostAlgorithmOrder, GetPostsQuery, GetPostCountQuery, PostToUpdate, PostToCreate, SetPostBody, GetPostQuery } from "~/models/post";
 import type { GetDatasExtended, VerificationTargetWrapper } from "~/models/util";
 import { useApiFetch } from "./customFetch";
 
@@ -29,8 +29,10 @@ export function getPostsNoContent(query: GetPostsQuery) {
     });
 }
 
-export function getPost(id: number) {
-    return useApiFetch<PostInfo>(`/post/${id}`);
+export function getPost(id: number, query: GetPostQuery) {
+    return useApiFetch<PostInfo>(`/post/${id}`, {
+        query,
+    });
 }
 
 export function setPostStatus(id: number, body: SetPostBody) {

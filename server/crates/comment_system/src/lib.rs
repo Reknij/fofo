@@ -394,7 +394,7 @@ impl CommentSystem {
         tx: &mut SqliteConnection,
         id: usizedb,
     ) -> Result<CommentStatus> {
-        let r = sqlx::query("SELECT status FROM posts WHERE id=? LIMIT 1")
+        let r = sqlx::query("SELECT status FROM comments WHERE id=? LIMIT 1")
             .bind(id)
             .fetch_one(&mut *tx)
             .await?;

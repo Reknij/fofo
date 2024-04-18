@@ -1,13 +1,5 @@
 <script setup lang="ts">
 import { getApiDetailError } from "~/helper";
-import {
-  NSpace,
-  NInputNumber,
-  NButton,
-  NCard,
-  NPageHeader,
-  useMessage,
-} from "naive-ui";
 import type { CommentInfo } from "~/models/comment";
 import { ContentType } from "~/models/util";
 import { createComment, updateComment } from "~/api/comment";
@@ -16,6 +8,7 @@ import { useCurrentUser } from "~/states/auth";
 import { UserType } from "~/models/user";
 import type { Category } from "~/models/category";
 import MarkdownEditor from "./MarkdownEditor.vue";
+import { number, object, string } from "yup";
 
 const props = defineProps<{
   post: PostInfo;
@@ -25,9 +18,17 @@ const props = defineProps<{
 }>();
 
 const router = useRouter();
-const message = useMessage();
-const content = ref(props.edit?.content ?? "");
-const topIndex = ref(props.edit?.top_index ?? 0);
+const toast = useToast();
+const state = reactive({
+  content: props.edit?.content ?? '',
+  content_type: ContentType.Markdown,
+  top_index: props.edit?.top_index ?? 0,
+})
+
+const schema = object({
+  content: string().required("Required"),
+  top_index: number().nullable(),
+})
 const config = useRuntimeConfig();
 const current = useCurrentUser();
 const canSetTop = computed(
@@ -45,77 +46,71 @@ async function commentNow() {
       props.edit.id,
       {
         target: {
-          content: content.value,
-          content_type: ContentType.Markdown,
-          top_index: topIndex.value,
+          ...state
         },
       }
     );
     comment = commentResp.value;
     error = errorResp.value;
     if (comment) {
-    message.success("Success update the comment!");
-    await router.push(
-      `/post/${props.post.id}`
-    );
-  } else {
-    const err = getApiDetailError(error);
-    message.error(`(${err?.code}) Create failed. ${err?.msg}`);
-  }
+      toast.add({
+        description: "Success update the comment!"
+      })
+      await router.push(
+        `/post/${props.post.id}`
+      );
+    } else {
+      const err = getApiDetailError(error);
+      toast.add({
+        color: 'red',
+        description: `(${err?.code}) Create failed. ${err?.msg}`
+      })
+    }
   } else {
     let { data: commentResp, error: errorResp } = await createComment({
       target: {
-        content: content.value,
-        content_type: ContentType.Markdown,
+        ...state,
         post_id: props.post.id,
         reply_comment_id: props.comment?.id ?? 0,
-        top_index: topIndex.value,
       },
     });
     comment = commentResp.value;
     error = errorResp.value;
     if (comment) {
-      message.success("Success create the comment!");
+      toast.add({
+        description: "Success create the comment!"
+      })
       current.value!.total_comment += 1;
       await router.push(
-        `/post/${props.post.id}?comment_page=${Math.ceil(
+        `/post/${props.post.id}?comment_page=${props.post.total_comment_post ? Math.ceil(
           props.post.total_comment_post / config.public.limitData.comments
-        )}`
+        ) : 1}`
       );
     } else {
       const err = getApiDetailError(error);
-      message.error(`(${err?.code}) Create failed. ${err?.msg}`);
+      toast.add({
+        color: 'red',
+        description: `(${err?.code}) Create failed. ${err?.msg}`
+      })
     }
   }
-}
-
-async function handleBack() {
-  router.replace(`/post/${props.post.id}`);
 }
 </script>
 
 <template>
-  <n-card size="small">
-    <n-page-header :title="post.title" @back="handleBack">
-      <n-space vertical>
-        <MarkdownEditor
-          v-model:value="content"
-          placeholder="Your comment content."
-        />
-        <n-space align="center" v-if="canSetTop">
-          Top Index
-          <n-input-number v-model:value="topIndex"></n-input-number>
-        </n-space>
-        <n-button @click="commentNow">
+  <UCard>
+    <UForm class="space-y-2" :schema="schema" :state="state">
+      <UFormGroup label="Content" path="content">
+        <MarkdownEditor v-model:value="state.content" placeholder="Your comment content." />
+      </UFormGroup>
+      <UFormGroup v-if="canSetTop" label="Top index" path="top_index">
+        <UInput type="number" v-model="state.top_index" />
+      </UFormGroup>
+      <UFormGroup>
+        <UButton @click="commentNow">
           {{ edit ? "Save edit" : "Comment now" }}
-        </n-button>
-      </n-space>
-    </n-page-header>
-  </n-card>
+        </UButton>
+      </UFormGroup>
+    </UForm>
+  </UCard>
 </template>
-
-<style>
-.bytemd {
-  height: 400px;
-}
-</style>

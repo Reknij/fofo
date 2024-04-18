@@ -1,18 +1,13 @@
 <script setup lang="ts">
-import { NSpace, NText } from 'naive-ui';
 
 </script>
 
 <template>
-    <div style="margin: 5px">
-        <n-space align="center" justify="center" vertical>
-            <n-text>
-                Forum powered by
-                <a href="https://github.com/Reknij/fofo"><n-text strong>Fofo</n-text></a>.
-            </n-text>
-            <n-text>
-                Fofo is a free and compact forum software.
-            </n-text>
-        </n-space>
+    <div class="border-t border-gray-200 dark:border-gray-800 ">
+        <div class="flex flex-col m-2 p-2 space-y-2 items-center  w-full max-w-screen-xl mx-auto">
+            <p>Forum powered by
+                <a href="https://github.com/Reknij/fofo"><span class="font-bold">Fofo</span></a>.
+            </p>
+        </div>
     </div>
 </template>

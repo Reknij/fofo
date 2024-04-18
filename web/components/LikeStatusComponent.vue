@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { NIcon, NSpace, NButton, useMessage } from 'naive-ui'
-import { LikeFilled, LikeOutlined, DislikeFilled, DislikeOutlined } from '@vicons/antd'
 import type { PostInfo } from '~/models/post';
 import { useCurrentUser } from '~/states/auth';
 import { LikeAction, type LikeStatus, LikeStatusFlag } from '~/models/like';
@@ -15,8 +13,7 @@ const props = defineProps<{
     flag: LikeStatusFlag,
     status?: LikeStatus | null,
 }>()
-const message = useMessage();
-
+const toast = useToast();
 const currentUser = useCurrentUser();
 async function likeActionClicked(e: Event, likeOrDislike: boolean): Promise<void> {
     e.stopPropagation();
@@ -42,32 +39,34 @@ async function likeActionClicked(e: Event, likeOrDislike: boolean): Promise<void
         emit('statusChanged', newStatus)
     }
     else {
-        message.warning('Please login to continue!');
+        toast.add({
+            color: 'yellow',
+            description: 'Please login to continue!'
+        })
     }
+}
+
+function getThrumbIcon(is_like: boolean) {
+    const upOrDown = is_like ? "up" : "down";
+    if (props.status?.is_like === is_like) return `i-material-symbols-thumb-${upOrDown}-rounded`
+    else return `i-material-symbols-thumb-${upOrDown}-outline-rounded`
 }
 
 </script>
 
 <template>
-    <n-space align="center">
-        <n-button text @click="(e: Event) => likeActionClicked(e, true)">
-            <template #icon>
-                <n-icon>
-                    <LikeFilled v-if="status?.is_like === true" />
-                    <LikeOutlined v-else />
-                </n-icon>
+    <div class="flex items-center space-x-2 p-1">
+        <UButton class="hover:text-primary-500 dark:hover:text-gray-400" color="white" variant="ghost" :padded="false"
+            @click="(e: Event) => likeActionClicked(e, true)" :label="info.likes.toString()">
+            <template #leading>
+                <UIcon dynamic :name="getThrumbIcon(true)" />
             </template>
-            {{ info.likes }}
-        </n-button>
-
-        <n-button text @click="(e: Event) => likeActionClicked(e, false)">
-            <template #icon>
-                <n-icon>
-                    <DislikeFilled v-if="status?.is_like === false" />
-                    <DislikeOutlined v-else />
-                </n-icon>
+        </UButton>
+        <UButton class="hover:text-primary-500 dark:hover:text-gray-400" variant="ghost" color="white" :padded="false"
+            @click="(e: Event) => likeActionClicked(e, false)" :label="info.dislikes.toString()">
+            <template #leading>
+                <UIcon dynamic :name="getThrumbIcon(false)" />
             </template>
-            {{ info.dislikes }}
-        </n-button>
-    </n-space>
+        </UButton>
+    </div>
 </template>

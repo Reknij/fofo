@@ -1,14 +1,11 @@
 <script setup lang="ts">
 import { PostAlgorithmOrder } from "~/models/post";
-import { NCard, NSpace, NAlert, useLoadingBar } from "naive-ui";
 import { isLogined } from "~/states/auth";
 import { getUserNotifications } from "~/api/notification";
 import type { GetDatasExtended } from "~/models/util";
 import type { UserNotification } from "~/models/notification";
 
 const router = useRouter();
-const loadingBar = useLoadingBar();
-loadingBar.start();
 
 const config = useRuntimeConfig();
 let notifications: GetDatasExtended<UserNotification> | undefined = undefined;
@@ -30,28 +27,24 @@ useHead({
   title: `Home`,
 });
 
-onMounted(() => loadingBar.finish());
 </script>
+
 <template>
-  <n-space vertical>
-    <n-space v-if="(notifications?.data.total ?? 0) > 0" vertical>
-      <n-alert
-        class="clickable"
-        @click="goNotifications"
-        title="Note"
-        type="info"
-      >
-        You have {{ notifications?.data.total }} unread notifications.
-      </n-alert>
-    </n-space>
-    <n-card size="small">This week's post.</n-card>
-    <n-card size="small">
-      <PostList
-        :sort="PostAlgorithmOrder.Newest"
-        :distinct="config.public.default.distinct"
-        query_pagination
-        :top_order_enable="true"
-      ></PostList>
-    </n-card>
-  </n-space>
+  <div class="space-y-2">
+    <UAlert v-if="notifications?.data.total" color="primary" variant="subtle" title="Notifications"
+      :description="`You have ${notifications.data.total} unread notifications.`" :actions="[{
+        label: 'View now',
+        color: 'primary',
+        variant: 'solid',
+        async click() {
+          await goNotifications()
+        }
+      }]">
+    </UAlert>
+    <UAlert title="This week's post."></UAlert>
+    <PostList :sort="PostAlgorithmOrder.Newest" :distinct="config.public.default.distinct" :limit="20" time="week"
+      :time_num="1" :top_order_enable="true" disable_query></PostList>
+    <UAlert title="Hot post."></UAlert>
+    <PostList :sort="PostAlgorithmOrder.Hot" :top_order_enable="false" :distinct="config.public.default.distinct" :limit="10"></PostList>
+  </div>
 </template>
