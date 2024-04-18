@@ -444,6 +444,9 @@ impl CategorySystem {
         category_id: usizedb,
         user: &UserInfo,
     ) -> Result<bool> {
+        if sqlx::query("SELECT 1 FROM category_groups WHERE category_id=?").bind(category_id).fetch_optional(&mut *tx).await?.is_none() {
+            return  Ok(true); // category don't have any group.
+        }
         for group_id in &user.group_ids {
             if sqlx::query(
                 "SELECT 1 FROM category_groups WHERE category_id=? AND group_id=? LIMIT 1",

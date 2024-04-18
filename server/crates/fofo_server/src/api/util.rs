@@ -391,7 +391,7 @@ pub async fn check_user(
             }
             user_system::model::UserStatus::OnlyComment => {
                 if w == WhatToDo::WritePost {
-                    return ApiError::no_permission().to_err();
+                    return ApiError::no_permission("You user status only can comment!").to_err();
                 }
             }
         }
@@ -413,11 +413,11 @@ pub async fn check_group(
         group_system::model::GroupStatus::Active => (),
         group_system::model::GroupStatus::OnlyComment => {
             if w == WhatToDo::WritePost {
-                return ApiError::no_permission().to_err();
+                return ApiError::no_permission("The group you inside only can comment.").to_err();
             }
         }
         group_system::model::GroupStatus::Observer => {
-            return ApiError::no_permission().to_err();
+            return ApiError::no_permission("The group you inside only the observer.").to_err();
         }
     }
 
@@ -448,7 +448,7 @@ pub async fn check_post(
                     return ApiError::uneditable_time().to_err();
                 }
                 if user.is_none() || (post.created_by_id != user.unwrap().id && !manage) {
-                    return ApiError::no_permission().to_err();
+                    return ApiError::no_permission("You not have permission to post.").to_err();
                 }
             }
         }
@@ -495,7 +495,7 @@ pub async fn check_comment(
                     return ApiError::uneditable_time().to_err();
                 }
                 if user.is_none() || (comment.created_by_id != user.unwrap().id && !manage) {
-                    return ApiError::no_permission().to_err();
+                    return ApiError::no_permission("You not have permission to comment.").to_err();
                 }
             }
         }
@@ -523,12 +523,12 @@ pub async fn check_category(
         category_system::model::CategoryStatus::Active => match w {
             WhatToDo::LikePost | WhatToDo::LikeComment | WhatToDo::WritePost => {
                 if !s.category.can_write(tx, category_id, user).await? {
-                    return ApiError::no_permission().to_err();
+                    return ApiError::no_permission("Can't post under category.").to_err();
                 }
             }
             WhatToDo::WriteComment | WhatToDo::ReplyComment => {
                 if !s.category.can_comment(tx, category_id, user).await? {
-                    return ApiError::no_permission().to_err();
+                    return ApiError::no_permission("Can't comment under category.").to_err();
                 }
             }
             WhatToDo::None => (),
@@ -585,7 +585,7 @@ pub async fn can_manage_post(
     }
     let post = s.post.get_post_base(tx, post_id).await?;
     if !s.category.can_manage(tx, post.category_id, user).await? {
-        ApiError::no_permission().to_err()
+        ApiError::no_permission("You not the manager.").to_err()
     } else {
         Ok(())
     }
@@ -602,7 +602,7 @@ pub async fn can_manage_comment(
     }
     let comment = s.comment.get_comment_base(tx, comment_id).await?;
     if !s.category.can_manage(tx, comment.category_id, user).await? {
-        ApiError::no_permission().to_err()
+        ApiError::no_permission("You not the manager.").to_err()
     } else {
         Ok(())
     }

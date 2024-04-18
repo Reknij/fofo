@@ -92,7 +92,7 @@ pub async fn delete_user_by_id(
 
     let current = client.get_user_unwrap();
     if !current.is_admin() && id != current.id {
-        return ApiError::no_permission().to_err();
+        return ApiError::no_permission("You not permission to delete user.").to_err();
     }
     let r = s.user.delete_user(tx.as_mut(), id).await?;
     tx.commit().await.unwrap();
@@ -191,7 +191,7 @@ pub async fn update_user(
             None => ApiError::no_user_found().to_err(),
         }
     } else {
-        ApiError::no_permission().to_err()
+        ApiError::no_permission("You not permission to update user.").to_err()
     }
 }
 

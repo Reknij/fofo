@@ -127,11 +127,11 @@ impl ApiError {
         )
     }
 
-    pub fn no_permission() -> Self {
+    pub fn no_permission(msg: &str) -> Self {
         ApiError::new(
             StatusCode::UNAUTHORIZED,
             DetailErrorCode::NoPermission,
-            "You no permission to access.",
+            msg,
         )
     }
 

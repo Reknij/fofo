@@ -32,7 +32,7 @@ pub async fn upload_presigned(
     let storage = s.storage.as_local();
     let mut tx = s.core.begin_unwrap(true).await;
     if !storage.verify(tx.as_mut(), &key, &query.authorize).await? {
-        return ApiError::no_permission().to_err();
+        return ApiError::no_permission("Can't authorization! Upload failed.").to_err();
     }
 
     return if storage.put_object(&key, &body).await? {
