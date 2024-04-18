@@ -1,3 +1,6 @@
+# Current development progress
+Since my energy is limited, I mainly focus on fixing bugs. New features will not be updated for the time being.
+
 # To do
 - web ui support i18n.
 - category and post support upload cover.
