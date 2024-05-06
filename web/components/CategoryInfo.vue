@@ -8,7 +8,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div class="space-y-2">
+  <div class="space-y-1.5">
     <UAlert title="Archived" color="yellow"
       description="Category is archived. Meaning you can't create, update or comment post on it."
       v-if="category.status === CategoryStatus.Archived" />
@@ -17,7 +17,7 @@ const props = defineProps<{
       v-else-if="category.status === CategoryStatus.Stopped" />
     <UCard :ui="{ body: { padding: '!p-0' } }">
       <template #header>
-        <div class="flex items-center gap-x-2">
+        <div class="flex items-center gap-1.5">
           <UIcon name="i-heroicons-square-3-stack-3d" />
           <span class="text-2xl">{{ category.title }}</span>
         </div>

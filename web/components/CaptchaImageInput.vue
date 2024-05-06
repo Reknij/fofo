@@ -31,9 +31,9 @@ defineExpose({
 
 <template>
   <lazy-client-only>
-    <div class="flex flex-col justify-center space-y-2">
+    <div class="flex flex-col justify-center gap-1.5">
       <UButtonGroup>
-        <img v-if="verification?.secret_key_picture_url"
+        <img class="rounded-l" v-if="verification?.secret_key_picture_url"
           :src="`${verification!.secret_key_picture_url}?t=${Date.now()}`" />
         <span v-else>
           {{ getErrorText() }}
@@ -41,7 +41,7 @@ defineExpose({
         <UButton class="rounded-l-none" tabindex="-1" @click="refreshVerification()" color="gray"
           icon="i-heroicons-arrow-path" />
       </UButtonGroup>
-      <UInput class="max-w-36" :model-value="value" @update:model-value="(v: string) => $emit('update:modelValue', v)"
+      <UInput class="max-w-36" :model-value="modelValue" @update:model-value="(v: string) => $emit('update:modelValue', v)"
         :placeholder="placeholder ?? 'Enter the captcha.'" />
     </div>
   </lazy-client-only>

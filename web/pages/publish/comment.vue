@@ -71,7 +71,7 @@ const links = [
 
 <template>
   <ClientOnly>
-    <div class="space-y-2">
+    <div class="space-y-1.5">
       <FofoBreadcrumb :links="links" />
       <UAlert v-if="!post" title="Post not found." />
       <UAlert v-else-if="!category" title="Category not found." />

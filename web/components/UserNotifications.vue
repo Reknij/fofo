@@ -186,13 +186,13 @@ function getNotificationTitle(un?: UserNotification) {
 </script>
 
 <template>
-  <div class="space-y-2">
+  <div class="space-y-1.5">
     <UAlert v-if="notifications?.data.total === 0" title="No notifications yet~" />
     <UPagination v-if="!hide_pagination && notifications?.data.total" :model-value="query.index + 1"
       @update:model-value="(v: number) => query.index = v + 1" :page-count="limit ?? config.public.limitData.any"
       :total="max ?? notifications.data.total" />
 
-    <UBadge class="gap-x-2" variant="soft" v-if="unreadNotifications?.data.total">
+    <UBadge class="gap-1.5" variant="soft" v-if="unreadNotifications?.data.total">
       <span v-if="unreadNotifications?.data.total === 0">All readed</span>
       <span v-else>All unread</span>
       <UToggle :model-value="unreadNotifications?.data.total === 0"
@@ -201,9 +201,9 @@ function getNotificationTitle(un?: UserNotification) {
 
     <UCard v-for="notification in notifications?.data.items">
       <div class="flex flex-col justify-center">
-        <div class="flex flex-wrap items-center gap-x-2 gap-y-2">
+        <div class="flex flex-wrap items-center gap-1.5">
           <span class="code">{{ timeAgo(notification.created_at) }}</span>
-          <div class="flex items-center gap-x-2">
+          <div class="flex items-center gap-1.5">
             <span v-if="notification.readed">Readed</span>
             <span v-else>Unread</span>
             <UToggle :model-value="notification.readed"
@@ -211,7 +211,7 @@ function getNotificationTitle(un?: UserNotification) {
           </div>
         </div>
         <span>{{ getNotificationTitle(notification) }}</span>
-        <div class="flex gap-x-1 items-center" v-if="getPost(getPostId(notification))">
+        <div class="flex gap-1.5 items-center" v-if="getPost(getPostId(notification))">
           <UIcon v-if="getPost(getPostId(notification))!.top_index" name="i-ph-push-pin" dynamic />
           <UIcon v-if="getPost(getPostId(notification))!.status === PostStatus.Banned" name="i-heroicons-lock-closed"
             class="text-red-500" />
@@ -222,12 +222,12 @@ function getNotificationTitle(un?: UserNotification) {
             {{ getPost(getPostId(notification))!.title }}
           </ULink>
         </div>
-        <div class="flex flex-col justify-center gap-y-1">
+        <div class="flex flex-col justify-center gap-1.5">
           <FofoUserAvatar :user="getUser(notification.created_by_id)" :tag="getTag(
             notification.created_by_id,
             getComment(notification.ref_id)?.post_id ?? 0
           )">
-            <div class="flex flex-row items-center space-x-1" v-if="
+            <div class="flex flex-row items-center space-1.5" v-if="
               isCommentClass(notification) &&
               getComment(notification.ref_id)?.reply_comment_id
             ">

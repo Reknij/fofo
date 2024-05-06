@@ -91,7 +91,7 @@ async function runCreate() {
 
 <template>
   <UCard>
-    <UForm class="space-y-2" :schema="schema" :state="state" @keyup.enter="runCreate">
+    <UForm class="space-y-1.5" :schema="schema" :state="state" @keyup.enter="runCreate">
       <UFormGroup label="Title" path="title">
         <UInput v-model="state.title" placeholder="Category title" />
       </UFormGroup>

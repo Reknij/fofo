@@ -1,23 +1,11 @@
 <script setup lang="ts">
-const config = useRuntimeConfig();
+import data from '/public/about.md?raw'
 
 </script>
 
 <template>
     <UCard>
-        {{ $config.public.forumName }} is a freedom forum. Here you can say what you want, but the following rules need to be met.
-        <ul>
-            <li>
-                Do not verbally abuse others for no reason.
-            </li>
-            <li>
-                Keep basic friendly exchanges.
-            </li>
-            <li>
-                Unsubstantiated rumors cannot be knowingly spread.
-            </li>
-        </ul>
-        <img style="max-width: 100%"
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Face-smile.svg/768px-Face-smile.svg.png" />
+        <MarkdownViewer v-if="data" :content="data" />
+        <span v-else>Can't fetch the <span class="code">about.md</span>.</span>
     </UCard>
 </template>

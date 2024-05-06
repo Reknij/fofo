@@ -217,17 +217,17 @@ async function goComment(comment?: CommentInfo) {
 </script>
 
 <template>
-  <div class="space-y-2 m-2" v-if="comments">
+  <div class="space-y-1.5 m-2" v-if="comments">
     <UPagination :model-value="query.index + 1" @update:model-value="changePage" :page-count="query.limit"
       :total="getTotalComment()" />
 
-    <div v-for="(comment, i) in comments.data.items" class="flex flex-col justify-center gap-y-1">
+    <div v-for="(comment, i) in comments.data.items" class="flex flex-col justify-center gap-1.5">
       <div class="flex flex-row items-center justify-between">
         <div>
           <UIcon v-if="comment.top_index! > 0" name="i-ic-outline-push-pin" />
           <FofoUserAvatar :user="getUserFromExtended(comments, comment.created_by_id)!"
             :tag="getTag(comment.created_by_id)">
-            <div class="flex flex-row flex-wrap items-center gap-x-1 gap-y-1" v-if="comment.reply_comment_id > 0">
+            <div class="flex flex-row flex-wrap items-center gap-1.5" v-if="comment.reply_comment_id > 0">
               <UIcon name="i-mdi-menu-right-outline" />
               <UBadge variant="subtle" v-if="comment.reply_user_id === currentUser?.id">You</UBadge>
               <FofoUserAvatar v-else :disable-avatar="true"
@@ -238,22 +238,22 @@ async function goComment(comment?: CommentInfo) {
           </FofoUserAvatar>
         </div>
         <UDropdown :items="getActionOptions(comment)">
-          <UButton icon="i-heroicons-ellipsis-vertical" variant="ghost" />
+          <UButton icon="i-heroicons-ellipsis-vertical" class="shadow-none" variant="ghost" />
         </UDropdown>
       </div>
-      <MarkdownViewer class="-m-2" v-if="
+      <MarkdownViewer v-if="
         comment.status === CommentStatus.Active &&
         comment.content_type == ContentType.Markdown
       " :content="comment.content" :max_row="2" />
       <UAlert v-else color="red" variant="soft" title="Comment is banned!" />
-      <div class="flex items-center space-x-2" v-if="comment.status === CommentStatus.Active">
+      <div class="flex items-center gap-1.5" v-if="comment.status === CommentStatus.Active">
         <LikeStatusComponent :info="comment" :flag="LikeStatusFlag.TargetComment" :status="getCommentLikeStatusFromExtended(comments, comment.id)
           " @statusChanged="(s: LikeStatus | null) => statusChanged(comment, s)" />
         <UButton v-if="post.status === PostStatus.Active" color="primary" variant="link" :padded="false"
           @click="(comment as any).showComments = !(comment as any).showComments">
           {{ (comment as any).showComments ? "Hide comments" : "View comments" }}</UButton>
       </div>
-      <div class=" bg-gray-100 dark:bg-slate-800 shadow-inner rounded-2xl my-1 p-2"
+      <div class=" bg-gray-100 dark:bg-slate-800 shadow-inner rounded my-1 p-2"
         v-if="(comment as any).showComments">
         <Comments v-if="comment.parent_id == 0 && comment.total_comment > 0" :post="post" :parent_comment="comment"
           :category="category" :limit="Math.round((limit ?? config.public.limitData.comments) / 2)"
@@ -264,3 +264,9 @@ async function goComment(comment?: CommentInfo) {
     </div>
   </div>
 </template>
+
+<style scoped>
+:deep(.markdown-body) {
+  @apply rounded;
+}
+</style>

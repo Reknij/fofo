@@ -61,7 +61,7 @@ async function runLogin() {
 
 <template>
   <UCard>
-    <UForm class="space-y-2" :schema="schema" :state="state" @keyup.enter="runLogin">
+    <UForm class="space-y-1.5" :schema="schema" :state="state" @keyup.enter="runLogin">
       <UFormGroup label="Username" path="username">
         <UInput v-model="state.username" placeholder="Your username" />
       </UFormGroup>

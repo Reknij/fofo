@@ -34,8 +34,8 @@ async function goUser(e: Event) {
 
 <template>
   <div>
-    <div class="flex flex-wrap items-center gap-x-1 gap-y-1">
-      <img v-if="disableAvatar !== true" class="clickable rounded-lg size-8" :src="getAvatar(user)" @click="goUser" />
+    <div class="flex flex-wrap items-center gap-1.5 ">
+      <img v-if="disableAvatar !== true" class="clickable rounded size-8" :src="getAvatar(user)" @click="goUser" />
       <a class="userIdentity" @click="goUser" :href="`/user/${user?.id}`">
         <span class="text-sm">{{ `${user?.alias}` ?? "Unknown" }}</span>
         <span class="code !px-0">{{ `@${user?.username}` }}</span>

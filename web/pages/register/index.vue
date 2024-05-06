@@ -72,7 +72,7 @@ async function runRegister() {
 
 <template>
     <UCard>
-        <UForm class="space-y-2" :schema="schema" :state="state" @keyup.enter="runRegister">
+        <UForm class="space-y-1.5" :schema="schema" :state="state" @keyup.enter="runRegister">
             <UFormGroup label="Username" path="username">
                 <UInput v-model="state.username" placeholder="Your username" />
             </UFormGroup>

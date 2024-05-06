@@ -69,24 +69,24 @@ useHead({
 </script>
 
 <template>
-  <div class="space-y-2" v-if="user">
+  <div class="space-y-1.5" v-if="user">
     <FofoBreadcrumb :links="links"></FofoBreadcrumb>
     <UCard>
       <FofoUserAvatar :user="user"></FofoUserAvatar>
       <span class="code">{{ user.signature }}</span>
-      <div class="flex items-center gap-x-1">
+      <div class="flex items-center gap-1.5">
         <span style="font-weight: bold">Joined time:</span>
         <span class="code">{{ timeAgo(user.created_at) }}</span>
       </div>
-      <div class="flex items-center gap-x-1">
+      <div class="flex items-center gap-1.5">
         <span style="font-weight: bold">Total post:</span>
         <span class="code">{{ user.total_post }}</span>
       </div>
-      <div class="flex items-center gap-x-1">
+      <div class="flex items-center gap-1.5">
         <span style="font-weight: bold">Total comment:</span>
         <span class="code">{{ user.total_comment }}</span>
       </div>
-      <div class="flex items-center gap-x-1">
+      <div class="flex items-center gap-1.5">
         <span style="font-weight: bold">Status:</span>
         <span v-if="user.status === UserStatus.Active" style="color: green;">Active</span>
         <span v-else-if="user.status === UserStatus.Banned" style="color: red;">Banned</span>

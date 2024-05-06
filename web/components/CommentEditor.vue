@@ -99,7 +99,7 @@ async function commentNow() {
 
 <template>
   <UCard>
-    <UForm class="space-y-2" :schema="schema" :state="state">
+    <UForm class="space-y-1.5" :schema="schema" :state="state">
       <UFormGroup label="Content" path="content">
         <MarkdownEditor v-model:value="state.content" placeholder="Your comment content." />
       </UFormGroup>

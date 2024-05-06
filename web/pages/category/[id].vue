@@ -47,20 +47,20 @@ useHead({
 </script>
 
 <template>
-  <div class="space-y-2">
+  <div class="space-y-1.5">
     <FofoBreadcrumb :links="links"></FofoBreadcrumb>
     <CategoryInfo v-if="category" :category="category"></CategoryInfo>
     <span v-else>Category info required.</span>
-    <div class="space-x-2">
+    <div class="flex gap-1.5">
       <UButton variant="soft" round @click="createPost">Create post</UButton>
       <UButton variant="soft" v-if="current?.user_type === UserType.Administrator" round @click="goEdit">Edit category
       </UButton>
     </div>
-    <UAlert title="This week's post."></UAlert>
+    <UAlert title="This week's post." color="primary" variant="subtle" />
     <PostList hide_category :category_id="id" :sort="PostAlgorithmOrder.Newest"
       :distinct="config.public.default.distinct" :limit="20" time="week" :time_num="1" :top_order_enable="true"
       disable_query></PostList>
-    <UAlert title="Hot post."></UAlert>
+    <UAlert title="Hot post." color="primary" variant="subtle" />
     <PostList hide_category :category_id="id" :top_order_enable="false" :sort="PostAlgorithmOrder.Hot" :distinct="config.public.default.distinct"
       :limit="10"></PostList>
   </div>

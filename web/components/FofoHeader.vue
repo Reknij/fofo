@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { logout, useCurrentUser } from "~/states/auth";
+import { UInput } from "#components";
 
-const router = useRouter();
 const currentUser = useCurrentUser();
 const isOpen = ref(false)
 const config = useRuntimeConfig();
@@ -21,6 +21,9 @@ onMounted(() => {
     colorModeLink.icon = "i-heroicons-moon"
   }
 })
+
+const searchValue = ref('');
+
 const fofoTitleLink = {
   badge: {
     color: 'primary',
@@ -29,6 +32,9 @@ const fofoTitleLink = {
     label: config.public.forumName,
   },
   to: '/'
+};
+const googleSearchLink = {
+  label: 'googleSearch',
 };
 const colorModeLink = reactive({
   icon: "i-heroicons-sun",
@@ -64,14 +70,31 @@ const mainLinks = [
 
 const desktopLinks = [
   [fofoTitleLink as any],
+  [googleSearchLink as any],
   [
     colorModeLink,
     ...mainLinks,
   ],
 ]
 
-const loginedMobileLinks = [
+const mobileLinks = [
+  [googleSearchLink as any],
   mainLinks,
+  [
+    {
+      label: "Login",
+      icon: 'i-heroicons-user-circle',
+      to: '/login'
+    }, {
+      label: "Register",
+      icon: 'i-heroicons-user-plus',
+      to: '/register'
+    },
+  ]
+]
+
+const loginedMobileLinks = [
+  ...mobileLinks,
   [{
     label: "Notifications",
     icon: 'i-heroicons-chat-bubble-bottom-center-text',
@@ -99,30 +122,15 @@ const loginedMobileLinks = [
     }
   }]
 ]
-const mobileLinks = [
-  mainLinks,
-  [
-    {
-      label: "Login",
-      icon: 'i-heroicons-user-circle',
-      async click() {
-        await router.push('/login')
-      }
-    }, {
-      label: "Register",
-      icon: 'i-heroicons-user-plus',
-      async click() {
-        await router.push('/register')
-      }
-    },
-  ]
-]
+
 mobileLinks.forEach(links => links.forEach((link: any) => {
+  if (link.label === 'googleSearch') return;
   link.click = () => {
     isOpen.value = false;
   }
 }))
 loginedMobileLinks.forEach(links => links.forEach((link: any) => {
+  if (link.label === 'googleSearch') return;
   link.click = () => {
     isOpen.value = false;
   }
@@ -146,8 +154,13 @@ const headerLinks = [
 
 <template>
   <div>
-    <div class="flex border-b border-gray-200 dark:border-gray-800">
-      <UHorizontalNavigation :links="desktopLinks" :ui="{ base: 'p-2' }" class="hidden xl:flex max-w-screen-xl mx-auto" />
+    <div class="flex border-b border-neutral-300 dark:border-neutral-900">
+      <UHorizontalNavigation :links="desktopLinks" :ui="{ base: 'p-2' }" class="hidden xl:flex max-w-screen-xl mx-auto">
+        <template #default="{ link }">
+          <SearchComponent v-model="searchValue" v-if="link.label === 'googleSearch'" />
+          <span v-else class="group-hover:text-primary relative">{{ link.label }}</span>
+        </template>
+      </UHorizontalNavigation>
       <UHorizontalNavigation class="xl:hidden" :ui="{ base: 'p-2' }" :links="headerLinks" />
     </div>
 
@@ -159,11 +172,16 @@ const headerLinks = [
             <NuxtLink class="text-base font-semibold leading-6 text-gray-900 dark:text-white" to="/">
               {{ $config.public.forumName }}
             </NuxtLink>
-            <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1"
+            <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1 shadow-none"
               @click="isOpen = false" />
           </div>
         </template>
-        <UVerticalNavigation :links="currentUser ? loginedMobileLinks : mobileLinks" />
+        <UVerticalNavigation :links="currentUser ? loginedMobileLinks : mobileLinks">
+          <template #default="{ link }">
+            <SearchComponent v-model="searchValue" v-if="link.label === 'googleSearch'" />
+            <span v-else class="group-hover:text-primary relative">{{ link.label }}</span>
+          </template>
+        </UVerticalNavigation>
       </UCard>
     </USlideover>
   </div>

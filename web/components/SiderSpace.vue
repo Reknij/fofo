@@ -78,7 +78,7 @@ function goLogout() {
 </script>
 
 <template>
-  <div class="space-y-2">
+  <div class="space-y-1.5">
     <UCard v-if="!isPostUser && !currentUser">
       <template #header>
         <div class="flex items-center justify-center">
@@ -86,7 +86,7 @@ function goLogout() {
         </div>
       </template>
       <template #footer>
-        <div class="flex items-center justify-center space-x-2">
+        <div class="flex items-center justify-center gap-1.5">
           <UButton to="/login">Login</UButton>
           <UButton v-if="serverInfo?.open_register" to="/register">Register</UButton>
         </div>
@@ -94,7 +94,7 @@ function goLogout() {
     </UCard>
     <UserDescription v-else :user="isPostUser ? postUser! : currentUser!" />
     <UCard v-if="currentUser">
-      <div class="flex flex-wrap items-center gap-x-2 gap-y-2">
+      <div class="flex flex-wrap items-center gap-1.5">
         <UButton size="sm" square variant="soft" to="/settings" icon="i-heroicons-adjustments-horizontal" />
         <UChip :text="totalMessageText" size="2xl">
           <UButton size="sm" variant="soft" square to="/notifications"
@@ -105,7 +105,7 @@ function goLogout() {
     </UCard>
     <UAlert :title="topPostsTitle" />
     <UCard v-if="posts" v-for="post in posts.data.items">
-      <div class="flex gap-x-1 items-center mx-2">
+      <div class="flex gap-1.5 items-center mx-2">
         <UIcon name="i-heroicons-fire-20-solid" />
         <UIcon v-if="post.status === PostStatus.Banned" name="i-heroicons-lock-closed" class="text-red-500" />
         <UIcon v-else-if="post.status === PostStatus.Archived" name="i-heroicons-lock-closed" class="text-yellow-500" />

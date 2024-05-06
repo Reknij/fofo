@@ -55,14 +55,14 @@ function getThrumbIcon(is_like: boolean) {
 </script>
 
 <template>
-    <div class="flex items-center space-x-2 p-1">
-        <UButton class="hover:text-primary-500 dark:hover:text-gray-400" color="white" variant="ghost" :padded="false"
+    <div class="flex items-center gap-1.5 p-1">
+        <UButton class="hover:text-primary-500 dark:hover:text-gray-400 shadow-none" color="white" variant="ghost" :padded="false"
             @click="(e: Event) => likeActionClicked(e, true)" :label="info.likes.toString()">
             <template #leading>
                 <UIcon dynamic :name="getThrumbIcon(true)" />
             </template>
         </UButton>
-        <UButton class="hover:text-primary-500 dark:hover:text-gray-400" variant="ghost" color="white" :padded="false"
+        <UButton class="hover:text-primary-500 dark:hover:text-gray-400 shadow-none" variant="ghost" color="white" :padded="false"
             @click="(e: Event) => likeActionClicked(e, false)" :label="info.dislikes.toString()">
             <template #leading>
                 <UIcon dynamic :name="getThrumbIcon(false)" />

@@ -151,11 +151,10 @@ function clearAvatar() {
 
 <template>
   <div>
-    <div v-if="currentUser" class="space-y-2">
+    <div v-if="currentUser" class="space-y-1.5">
       <FofoBreadcrumb :links="links"></FofoBreadcrumb>
-      <UAlert title="User Settings" />
       <UCard>
-        <UForm class="space-y-2" :schema="schema" :state="state" @keyup.enter="runUpdate">
+        <UForm class="space-y-1.5" :schema="schema" :state="state" @keyup.enter="runUpdate">
           <UFormGroup label="Alias" path="alias">
             <UInput v-model="state.alias" placeholder="Your alias" />
           </UFormGroup>
@@ -172,15 +171,15 @@ function clearAvatar() {
             <UInput v-model="state.signature" placeholder="Your signature" />
           </UFormGroup>
           <UFormGroup label="Avatar" path="avatar_url">
-            <div class="flex flex-col gap-1 justify-center">
-              <div v-if="state.avatar_url" class="flex flex-row flex-wrap gap-2 items-center">
+            <div class="flex flex-col gap-1.5 justify-center">
+              <div v-if="state.avatar_url" class="flex flex-row flex-wrap gap-1.5 items-center">
                 <img class="size-[64px]" :src="state.avatar_url" />
                 <img class="size-[128px]" :src="state.avatar_url" />
                 <img class="hidden sm:flex size-[256px] " :src="state.avatar_url" />
               </div>
-              <div class="flex flex-wrap items-center gap-1">
+              <div class="flex flex-wrap items-center gap-1.5">
                 <input class="flex" type="file" ref="fileSelector" accept="image/*" @change="fileChange" />
-                <div class="flex items-center gap-1">
+                <div class="flex items-center gap-1.5">
                   <UButton v-if="state.avatar_url != undefined" @click="clearAvatar">
                     Clear
                   </UButton>
@@ -200,7 +199,7 @@ function clearAvatar() {
         </UForm>
       </UCard>
     </div>
-    <div class="space-y-2" v-else>
+    <div class="space-y-1.5" v-else>
       <UCard>
         Please login first.
         <UButton @click="goLogin">Login now</UButton>

@@ -63,7 +63,7 @@ const links = [
 
 <template>
     <ClientOnly>
-        <div class="space-y-2">
+        <div class="space-y-1.5">
             <FofoBreadcrumb :links="links" />
             <UAlert title="Category not provided." v-if="!category" />
             <UAlert title="Please login to continue!" v-else-if="!user" />

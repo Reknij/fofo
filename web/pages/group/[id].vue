@@ -39,7 +39,7 @@ useHead({
 </script>
 
 <template>
-  <div class="space-y-2">
+  <div class="space-y-1.5">
     <FofoBreadcrumb :links="links"></FofoBreadcrumb>
     <GroupInfo v-if="group" :group="group"></GroupInfo>
     <span v-else>Group info required.</span>

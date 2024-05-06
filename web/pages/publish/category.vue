@@ -31,7 +31,7 @@ const links = [
 
 <template>
   <ClientOnly>
-    <div class="space-y-2">
+    <div class="space-y-1.5">
       <FofoBreadcrumb :links="links" />
       <CategoryEditor v-if="user?.user_type == UserType.Administrator" :edit="edit"></CategoryEditor>
       <UAlert v-else title="No permission to access..." />

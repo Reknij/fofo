@@ -8,10 +8,10 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div class="space-y-2">
+  <div class="space-y-1.5">
     <UCard>
       <template #header>
-        <div class="flex items-center gap-x-2">
+        <div class="flex items-center gap-1.5">
           <UIcon name="i-heroicons-user-group" />
           <span class="text-2xl">{{ group.title }}</span>
         </div>

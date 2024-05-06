@@ -3,7 +3,7 @@
 }
 
 .code {
-    @apply px-1.5 py-0.5 bg-neutral-200 dark:bg-gray-800 rounded-md text-gray-500 dark:text-neutral-300
+    @apply px-1.5 py-0.5 bg-neutral-200 dark:bg-gray-800 rounded text-gray-500 dark:text-neutral-300
 }
 
 .code-button {

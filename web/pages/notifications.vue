@@ -13,11 +13,11 @@ const links = [
 
 <template>
     <div>
-        <div class="space-y-2" v-if="user">
+        <div class="space-y-1.5" v-if="user">
             <FofoBreadcrumb :links="links"></FofoBreadcrumb>
             <UserNotifications />
         </div>
-        <div class="space-y-2" v-else>
+        <div class="space-y-1.5" v-else>
             <UCard>
                 <template #header>
                     Please login first.

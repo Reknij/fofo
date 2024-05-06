@@ -28,7 +28,7 @@ async function goCreate() {
 </script>
 
 <template>
-  <div class="space-y-2">
+  <div class="space-y-1.5">
     <FofoBreadcrumb :links="links"></FofoBreadcrumb>
     <UButton variant="soft" v-if="user?.user_type == UserType.Administrator" @click="goCreate">Create category</UButton>
     <UPagination :model-value="query.index + 1" @update:model-value="(v: number) => query.index = v - 1" :page-count="query.limit"
@@ -36,7 +36,7 @@ async function goCreate() {
     <UCard v-for="item in data?.data.items">
       <template #header>
         <div class="flex justify-between">
-          <div class="flex items-center gap-x-2">
+          <div class="flex items-center gap-1.5">
             <UIcon name="i-heroicons-square-3-stack-3d" />
             <ULink active-class="text-primary"
               inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"

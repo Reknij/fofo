@@ -128,7 +128,7 @@ useJsonld({
 
 <template>
   <div>
-    <div v-if="post && createdBy && category" class="space-y-2">
+    <div v-if="post && createdBy && category" class="space-y-1.5">
       <FofoBreadcrumb :links="links"></FofoBreadcrumb>
       <UAlert title="Archived" description="Category is archived. Means you can't create, update or comment post on it."
         color="yellow" v-if="category.status === CategoryStatus.Archived" />
@@ -142,9 +142,9 @@ useJsonld({
       <UCard :ui="{ body: { padding: '' } }">
         <template #header>
           <div class="flex flex-col justify-center">
-            <div v-if="post.total_comment > 0" class="flex items-center gap-x-2 flex-wrap">
+            <div v-if="post.total_comment > 0" class="flex items-center gap-1.5 flex-wrap">
               <span>Post have {{ post.total_comment }} comments.</span>
-              <div class="flex items-center gap-x-2">
+              <div class="flex items-center gap-1.5">
                 <UButton variant="link" @click="showComment = !showComment" :padded="false">
                   {{ showComment ? "Hide comments" : "View comments" }}
                 </UButton>

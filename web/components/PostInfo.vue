@@ -132,27 +132,27 @@ async function goUser(id: number) {
           <div v-if="created_by" class="flex justify-between items-center">
             <FofoUserAvatar :user="created_by" :tag="tag" />
             <UDropdown :items="actionOptions">
-              <UButton icon="i-heroicons-ellipsis-vertical" variant="ghost" />
+              <UButton icon="i-heroicons-ellipsis-vertical" class="shadow-none" variant="ghost" />
             </UDropdown>
           </div>
           <span v-else>Not found user.</span>
           <div class="text-2xl">{{ post.title }}</div>
           <span class="mx-1 code text-xs" v-for="tag in post.tags">#{{ tag }}</span>
 
-          <div class="flex flex-wrap gap-x-1">
-            <div class="flex items-center gap-x-2 flex-wrap">
-              <div class="flex items-center gap-x-1">
+          <div class="flex flex-wrap gap-1.5">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <div class="flex items-center gap-1.5">
                 <UIcon name="i-heroicons-clock" />
                 {{ timeAgo(post.created_at) }}
               </div>
-              <div class="flex items-center gap-x-1">
+              <div class="flex items-center gap-1.5">
                 <UIcon name="i-heroicons-pencil-square" />
                 {{ timeAgo(post.last_edit_at) }} -
                 <span v-if="last_edit_by" class="userIdentity clickable" @click="goUser(last_edit_by!.id)">{{
                   last_edit_by.alias }}</span>
               </div>
             </div>
-            <div class="flex items-center gap-x-1">
+            <div class="flex items-center gap-1.5">
               <LikeStatusComponent :info="post" :status="likeStatus" :flag="LikeStatusFlag.TargetPost"
                 @statusChanged="(v: LikeStatus | null) => emit('statusChanged', v)" />
               <UIcon name="i-heroicons-eye" />
@@ -169,7 +169,7 @@ async function goUser(id: number) {
 
 <style scoped>
 :deep(.markdown-body) {
-  @apply rounded-b-lg;
+  @apply rounded-b;
 }
 
 .userIdentity {
