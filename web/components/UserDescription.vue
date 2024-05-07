@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { SafeUserInfo, UserTag } from "~/models/user";
+import { timeAgo } from "~/helper";
+import type { SafeUserInfo } from "~/models/user";
 
 const props = defineProps<{
   user: SafeUserInfo;
@@ -13,12 +14,23 @@ const props = defineProps<{
         <FofoUserAvatar :user="user"></FofoUserAvatar>
       </div>
     </template>
-    <span class="code">{{ user.signature }}</span>
-    <UDivider class="my-2" />
-    <span class="code">{{ user.total_post }}</span>
-    created posts.
-    <UDivider class="my-2" />
-    <span class="code">{{ user.total_comment }}</span>
-    created comments.
+    <div class="flex flex-col items-center justify-center">
+      <span class="code">{{ user.signature }}</span>
+      <UDivider class="my-2" />
+      <div>
+        <span class="code">{{ user.total_post }}</span>
+        created posts.
+      </div>
+      <UDivider class="my-2" />
+      <div>
+        <span class="code">{{ user.total_comment }}</span>
+        created comments.
+      </div>
+      <UDivider class="my-2" />
+      <div>
+        Joined time
+        <span class="code">{{ timeAgo(user.created_at) }}</span>
+      </div>
+    </div>
   </UCard>
 </template>

@@ -56,12 +56,6 @@ const mainLinks = [
     to: "/groups"
   },
   {
-    label: 'Github',
-    to: 'https://github.com/Reknij/fofo',
-    target: '_blank',
-    icon: 'i-mdi-github',
-  },
-  {
     label: 'About',
     icon: 'i-heroicons-information-circle',
     to: '/about'
@@ -154,7 +148,8 @@ const headerLinks = [
 
 <template>
   <div>
-    <div class="flex border-b border-neutral-300 dark:border-neutral-900">
+    <div
+      class="border-b border-neutral-300 dark:border-neutral-900 shadow-md">
       <UHorizontalNavigation :links="desktopLinks" :ui="{ base: 'p-2' }" class="hidden xl:flex max-w-screen-xl mx-auto">
         <template #default="{ link }">
           <SearchComponent v-model="searchValue" v-if="link.label === 'googleSearch'" />

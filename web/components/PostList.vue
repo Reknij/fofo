@@ -156,15 +156,15 @@ function getCategory(id: number) {
             <span class="truncate">{{ getSortLabel(sort) }}</span>
           </template>
         </USelectMenu>
-        <UBadge class="gap-1.5" variant="soft">
-          Distinct
+        <UBadge class="gap-1.5" size="lg" color="white" variant="solid">
+          <span class="font-normal">Distinct</span>
           <UToggle @update:model-value="query.index = 0" v-model="query.distinct" />
         </UBadge>
       </div>
     </div>
     <UCard v-if="posts" v-for="post in posts.data.items">
       <div class="flex flex-col justify-between gap-1.5">
-        <div class="flex items-center justify-between gap-1.5 flex-wrap flex-grow">
+        <div class="flex items-center justify-between gap-1.5 flex-grow">
           <div class="flex flex-col gap-1.5">
             <div class="flex gap-1.5 items-center ">
               <UIcon v-if="post.top_index" name="i-ph-push-pin" dynamic />
@@ -196,10 +196,10 @@ function getCategory(id: number) {
               </div>
             </div>
           </div>
-          <UBadge v-if="post.total_comment > 0" color="gray">
+          <UBadge v-if="post.total_comment > 0" variant="soft">
             <div class="flex items-center justify-center gap-1.5">
               <UIcon name="i-heroicons-chat-bubble-left-ellipsis size-4" />
-              {{ post.total_comment }}
+              <span>{{ post.total_comment }}</span>
             </div>
           </UBadge>
         </div>

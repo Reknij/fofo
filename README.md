@@ -113,7 +113,7 @@ ttl_seconds = 5
 # tti in second.
 tti_seconds = 5
 # Post editable duration in second.
-editable_seconds = 30 * 60
+editable_seconds = 1800
 # Post and comment top index maximum, ignore admin.
 top_index_max = 9
 # Auto fetch the post cover from article if post created cover is empty.

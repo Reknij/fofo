@@ -9,6 +9,13 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       baseUrl: "",
+      externalLinks: [
+        {
+          label: "GitHub",
+          href: "https://github.com/Reknij/fofo",
+          icon: "i-mdi-github"
+        },
+      ],
       forumName: "Fofo",
       limitData: {
         any: 20,
